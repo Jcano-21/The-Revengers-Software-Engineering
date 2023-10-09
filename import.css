@@ -1,0 +1,16 @@
+body{
+        width: 100%;
+        height: 100%;
+        padding: 0px;
+        margin: 0px;
+}
+
+
+#container_whole{
+    background-color: #2D3436;
+    width: 100%;
+    height: 100%;
+    outline: black solid 2px;
+    margin: 0px;
+    z-index: 0;
+}
