@@ -1,0 +1,124 @@
+body{
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+#container_whole{
+    background-color: #2D3436;
+    width: 100%;
+    height: 100%;
+    outline: black solid 2px;
+    margin: 0px;
+}
+
+#title{
+    background: linear-gradient(0deg, #FFFFFF, #FFFFFF);
+    border-radius: 15px;
+    border: 1px solid #636E72;
+    width: 1708px;
+    height: 85px;
+    margin: auto;
+    border: 1px;
+    font-family: Manrope;
+    font-size: 45px;
+    font-weight: 700;
+    line-height: 61px;
+    letter-spacing: 0em;
+    text-align: center;
+}
+
+#picture_container{
+    width: 800px;
+    height: 750px;
+    top: 150px;
+    left: 50px;
+    padding: 25px, 41px, 25px, 59px;
+    border-radius: 20px;
+    background: #1A1B1C;
+    padding: 20px;
+    position: absolute;
+}
+
+
+#iss{
+    width: 700px;
+    height: 700px;
+    top: 25px;
+    left: 59px;
+    border-radius: 15px;
+    margin: auto;
+}   
+
+#rect1{
+    width: 867.86px;
+    height: 47.14px;
+    top: 453.67px;
+    left: 926.67px;
+    transform: rotate(-45deg);
+    background: #D9D9D9;
+    box-shadow: 0px 4px 4px 0px #00000040 inset;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    position: absolute;
+}
+
+#rect2{
+    width: 867.86px;
+    height: 47.14px;
+    top: 588.67px;
+    left: 926.67px;
+    transform: rotate(-45deg);
+    background: #D9D9D9;
+    box-shadow: 0px 4px 4px 0px #00000040 inset;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    position: absolute;
+}
+
+#look_up{
+    width: 769px;
+    height: 192px;
+    top: 280px;
+    left: 1008px;
+    border: 5px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px #00000040 inset;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    border: 5px solid #636E72;
+    background: linear-gradient(0deg, #DFE6E9, #DFE6E9);
+    position: absolute;
+    font-family: Manrope;
+    font-size: 45px;
+    font-weight: 400;
+    line-height: 61px;
+    letter-spacing: 0em;
+    text-align: center;
+
+}
+
+#import{
+    width: 769px;
+    height: 192px;
+    top: 580px;
+    left: 1008px;
+    border: 5px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px #00000040 inset;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    border: 5px solid #636E72;
+    background: linear-gradient(0deg, #DFE6E9, #DFE6E9);
+    position: absolute;
+    font-family: Manrope;
+    font-size: 45px;
+    font-weight: 400;
+    line-height: 61px;
+    letter-spacing: 0em;
+    text-align: center;
+
+}
+
+#look_up:hover, #import:hover{
+    background: linear-gradient(0deg, #ffffff, #DFE6E9);
+    font-size: 50px;
+
+}
