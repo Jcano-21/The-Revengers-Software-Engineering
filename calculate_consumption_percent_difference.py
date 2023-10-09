@@ -51,7 +51,7 @@ for category in categories:
     # Fetch the data into a DataFrame
     df = pd.read_sql(query, engine)
 
-    # Filter positive and non-zero consumption rates
+    # Filter positive consumption rates
     positive_non_zero_rates = df[df['daily_consumption_rate'] >= 0]
 
     # Calculate the average
