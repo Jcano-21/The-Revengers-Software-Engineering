@@ -70,3 +70,15 @@ body{
     text-align: center;
 
 }
+
+#graph_box{
+    width: 500px;
+    height: 500px;
+    border: red solid 2px;
+    border-radius: 10px;
+    position: absolute;
+    left: 50%;
+    top: 150px;
+    background-color: whitesmoke;
+
+}
