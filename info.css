@@ -72,8 +72,8 @@ body{
 }
 
 #graph_box{
-    width: 500px;
-    height: 500px;
+    width: 700px;
+    height: 700px;
     border: red solid 2px;
     border-radius: 10px;
     position: absolute;

@@ -51,6 +51,8 @@ body{
     left: 59px;
     border-radius: 15px;
     margin: auto;
+    padding: auto;
+    position: relative;
 }   
 
 #rect1{
