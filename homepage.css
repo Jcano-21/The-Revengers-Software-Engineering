@@ -19,7 +19,7 @@ body{
     border-radius: 15px;
     border: 1px solid #636E72;
     width: 1708px;
-    height: 85px;
+    height: 60px;
     margin: auto;
     border: 1px;
     font-family: Helvetica;
@@ -47,8 +47,6 @@ body{
 #iss{
     width: 750px;
     height: 750px;
-    top: 25px;
-    left: 59px;
     border-radius: 15px;
     margin: auto;
     padding: auto;
@@ -133,4 +131,3 @@ body{
     font-size: 50px;
 
 }
-
