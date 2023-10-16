@@ -20,6 +20,35 @@ categories = [
 # Dictionary to store counts for each category
 counts = {}
 
+# List of crew types
+crew_types = ['US', 'RS']
+
+# Dictionary to store counts for each crew type
+crew_counts = {}
+
+# Loop through crew types
+for crew_type in crew_types:
+    # SQL query for the current crew type
+    query = f"""
+        SELECT
+            a.datedim,
+            SUM(a.crew_count) AS {crew_type}_crew_count
+        FROM
+            iss_flight_plan_crew a
+        WHERE
+            a.crew_type = '{crew_type}'
+        GROUP BY
+            a.datedim
+        ORDER BY
+            a.datedim;
+    """
+    # Fetch the data into a DataFrame
+    df = pd.read_sql(query, engine)
+    # Store the DataFrame for the current crew type
+    crew_counts[crew_type] = df
+
+
+
 # Loop through categories
 for category in categories:
     # SQL query for the current category
@@ -48,6 +77,13 @@ for category in categories:
 
     # Store the DataFrame for the current category
     counts[category] = df
+
+# Print the crew counts for each crew type
+print("Crew counts for each crew type:")
+for crew_type, df in crew_counts.items():
+    print(f"\nCrew Type: {crew_type}")
+    print(df.head())
+    print(df.tail())
 
 # Print the counts for each category
 print("Data for each category:")
