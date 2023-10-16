@@ -22,7 +22,7 @@ body{
     height: 85px;
     margin: auto;
     border: 1px;
-    font-family: Manrope;
+    font-family: Helvetica;
     font-size: 45px;
     font-weight: 700;
     line-height: 61px;
@@ -32,7 +32,7 @@ body{
 }
 
 #picture_container{
-    width: 800px;
+    width: 750px;
     height: 750px;
     top: 150px;
     left: 50px;
@@ -45,8 +45,8 @@ body{
 
 
 #iss{
-    width: 700px;
-    height: 700px;
+    width: 750px;
+    height: 750px;
     top: 25px;
     left: 59px;
     border-radius: 15px;
@@ -89,7 +89,7 @@ body{
     border: 5px solid #636E72;
     background: linear-gradient(0deg, #DFE6E9, #DFE6E9);
     position: absolute;
-    font-family: Manrope;
+    font-family: Helvetica;
     font-size: 45px;
     font-weight: 400;
     line-height: 61px;
@@ -117,7 +117,7 @@ body{
     border: 5px solid #636E72;
     background: linear-gradient(0deg, #DFE6E9, #DFE6E9);
     position: absolute;
-    font-family: Manrope;
+    font-family: Helvetica;
     font-size: 45px;
     font-weight: 400;
     line-height: 61px;
