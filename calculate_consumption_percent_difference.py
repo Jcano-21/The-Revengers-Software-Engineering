@@ -17,8 +17,8 @@ categories = [
     'Pretreat Tanks'
 ]
 
-# Dictionary to store average rates for each category
-average_rates = {}
+# Dictionary to store counts for each category
+counts = {}
 
 # Loop through categories
 for category in categories:
@@ -26,46 +26,35 @@ for category in categories:
     query = f"""
         SELECT
             a.datedim,
-            a.quantity_count,
-            LAG(a.quantity_count, 1, 0) OVER (ORDER BY a.datedim) AS prev_quantity_count,
-            CASE
-                WHEN LAG(a.quantity_count, 1, 0) OVER (ORDER BY a.datedim) = 0 THEN NULL
-                ELSE (a.quantity_count - LAG(a.quantity_count, 1, 0) OVER (ORDER BY a.datedim)) / LAG(a.quantity_count, 1, 0) OVER (ORDER BY a.datedim)
-            END AS daily_consumption_rate
+            a.current_ip_owner,
+            SUM(CASE WHEN a.category_name IN ('{category}') AND a.current_ip_owner = 'NASA' THEN 1 ELSE 0 END) AS nasa_count,
+            SUM(CASE WHEN a.category_name IN ('{category}') AND a.current_ip_owner = 'RSA00' THEN 1 ELSE 0 END) AS rsa00_count,
+            COUNT(DISTINCT CASE WHEN a.category_name IN ('{category}') THEN a.id END) AS distinct_id_count_categories,
+            COUNT(DISTINCT CASE WHEN a.category_name IN ('{category}') AND a.status = 'discard' THEN a.id END) AS discard_count
         FROM
-            (
-                SELECT
-                    datedim,
-                    COUNT(quantity) AS quantity_count
-                FROM
-                    inventory_msc
-                WHERE
-                    category_name = '{category}'
-                GROUP BY
-                    datedim
-            ) a
+            inventory_msc a
+        WHERE
+            (a.current_ip_owner = 'NASA' OR a.current_ip_owner = 'RSA00')
+            AND a.category_name = '{category}'
+        GROUP BY
+            a.datedim, a.current_ip_owner
         ORDER BY
             a.datedim;
+
     """
 
     # Fetch the data into a DataFrame
     df = pd.read_sql(query, engine)
 
-    # Filter positive consumption rates
-    positive_non_zero_rates = df[df['daily_consumption_rate'] >= 0]
+    # Store the DataFrame for the current category
+    counts[category] = df
 
-    # Calculate the average
-    average_rate = np.mean(positive_non_zero_rates['daily_consumption_rate'])
-
-    # Store the average rate for the current category
-    average_rates[category] = average_rate
-
-# Print the average consumption rates for each category
-print("Average consumption rates for each category:")
-for category, rate in average_rates.items():
-    print(f"{category}: {rate}")
+# Print the counts for each category
+print("Data for each category:")
+for category, df in counts.items():
+    print(f"\nCategory: {category}")
+    print(df)
 
 # Dispose the SQLAlchemy engine
 engine.dispose()
-
-
+ 
