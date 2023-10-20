@@ -15,11 +15,29 @@
 
         <div id="info_screen">
             <div id="top" class="info_squares">No Warnings<br>Supplies Normal</div>
-            <div id="mid" class="info_squares">Date - 00/00/00</div>
-            <div id="bot" class="info_squares">Water(H_2O)</div>
+            <div id="mid" class="info_squares">
+                <label id="dateLabel">Dates</label>
+                <label for="startDate" id="startDateLabel">Start Date</label>
+                <input type="date" id="startDate" name="startDate">
+    
+                <label for="endDate" id="endDateLabel">End Date</label>
+                <input type="date" id="endDate" name="endDate">
+
+                <button id="submitDates">Submit</button>
+            </div>
+
+            <div class="dropdown">
+                <button class="dropbtn" id="itemSelection">Choose the Item</button>
+                
+                <div class="dropdown-content">
+                    <div class="choices" id="water"><a href="#">Water</a></div>
+                    <div class="choices" id="oxygen"><a href="#">Oxygen</a></div>
+                    <div class="choices" id="food"><a href="#">Food</a></div>
         </div>
 
         <div id="graph_box"></div>
     </div>
 </body>
+
+<script src="info.js"></script>
 </html>
