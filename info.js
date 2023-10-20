@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to change the text
     function changeText(choice) {
         itemSelectionButton.textContent = choice.textContent;
+        console.log(itemSelectionButton.textContent)
     }
 
     // Add click event listeners to the choices
