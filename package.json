@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "plotly.js-dist": "^2.27.0"
+  }
+}

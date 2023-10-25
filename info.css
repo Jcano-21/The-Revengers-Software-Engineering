@@ -78,7 +78,7 @@ body{
     border-radius: 10px;
     position: absolute;
     left: 700px;
-    top: 0px;
+    top: 150px;
     background-color: whitesmoke;
 
 }
@@ -160,4 +160,10 @@ body{
 
     position: relative;
     left: 150px;
+}
+
+#tester{
+
+    width:100%;
+    height: 100%;
 }
