@@ -3,51 +3,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Import Files</title>
-    <link rel="stylesheet" href="./info.css">
+    <link rel="stylesheet" href="./static/info.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    
 
 </head>
 <body>
     <div id="container_whole">
         <div id="navbar">
             <a id="look_up_link" href="./index.html"><button id="back_button" class="button_press" type="submit">Back</button></a>
-            <a id="look_up_link" href="./index.html"><button id="menu_button" class="button_press"type="submit">Menu</button></a>
-            <a id="look_up_link" href="./index.html"><button id="reset_button" class="button_press"type="submit">Reset</button></a>
+            <a id="look_up_link" href="./index.html"><button id="menu_button" class="button_press" type="submit">Menu</button></a>
+            <a id="look_up_link" href="./index.html"><button id="reset_button" class="button_press" type="submit">Reset</button></a>
         </div>
 
-        <div id="info_screen">
-            <div id="top" class="info_squares">No Warnings<br>Supplies Normal</div>
-            <div id="mid" class="info_squares">
-                <label id="dateLabel">Dates</label>
-                <label for="startDate" id="startDateLabel">Start Date</label>
-                <input type="date" id="startDate" name="startDate">
-    
-                <label for="endDate" id="endDateLabel">End Date</label>
-                <input type="date" id="endDate" name="endDate">
+        
+                <div id="info_screen">
+                <div id="top" class="info_squares">No Warnings<br>Supplies Normal</div>
+                <div id="mid" class="info_squares">
 
-                <button id="submitDates">Submit</button>
-            </div>
+                    <label id="dateLabel">Dates</label>
+                    <label for="startDate" id="startDateLabel">Start Date</label>
+                    <input type="date" id="startDate" name="startDate">
 
-            <div class="dropdown">
-                <button class="dropbtn" id="itemSelection">Choose the Item</button>
-                
-                <div class="dropdown-content">
-                    <div class="choices" id="water"><a href="#">Water</a></div>
-                    <div class="choices" id="oxygen"><a href="#">Oxygen</a></div>
-                    <div class="choices" id="food"><a href="#">Food</a></div>
+                    <label for="endDate" id="endDateLabel">End Date</label>
+                    <input type="date" id="endDate" name="endDate">
+
+                    <button id="submitDates">Submit</button>
+                </div>
+
+                <div class="dropdown">
+                    <button class="dropbtn" id="itemSelection">Choose the Item</button>
+
+                    <div class="dropdown-content">
+                        <div class="choices" id="acyInserts"><a href="#">ACY Inserts</a></div>
+                        <div class="choices" id="filterInserts"><a href="#">Filter Inserts</a></div>
+                        <div class="choices" id="food"><a href="#">Food</a></div>
+                        <div class="choices" id="foodRS"><a href="#">Food-RS</a></div>
+                        <div class="choices" id="foodUS"><a href="#">Food-US</a></div>
+                        <div class="choices" id="kto"><a href="#">KTO</a></div>
+                        <div class="choices" id="pTanks"><a href="#">Pretreat Tanks</a></div>
+
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div id="graph_box">
-            <div id="tester"></div>
-        </div>
-        
+            <div id="graph_box">
+                <div id="tester"></div>
+            </div>
+
     </div>
 </body>
 
-<script src="info.js"></script>
+<script src="static/info.js"></script>
 
 </html>
