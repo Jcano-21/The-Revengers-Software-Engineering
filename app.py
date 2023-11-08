@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import json as js
 from calculate_consumption_percent_difference import createRequest
-from ipywidgets import widgets
 
 app = Flask(__name__)
 
