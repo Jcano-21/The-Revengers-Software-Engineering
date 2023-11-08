@@ -36,8 +36,6 @@ def consumable():
     consumables_data = results['df1']
     UScrew_counts_data = results['df2']
     RScrew_counts_data = results['df3']
-    #consumables_data = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
-    #crew_counts_data = consumables.get_Ccount_for_date_range(data['start_date'], data['end_date'])
 
     print('consumables_data results:', consumables_data)
     print('crew_counts_data results:', UScrew_counts_data)
