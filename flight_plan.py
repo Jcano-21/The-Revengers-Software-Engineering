@@ -23,20 +23,24 @@ def getFlights(flights, data):
     query_category = f"""
         SELECT
             a.datedim,
-            a.vehicle_name
+            a.vehicle_name,
+            a.event
         FROM
             iss_flight_plan a
         WHERE
-            a.event = 'Dock'
+            (a.event = 'dock' OR a.event = 'undock')
             AND a.datedim BETWEEN '{data['start_date']}' AND '{data['end_date']}'
         ORDER BY
             a.datedim;
         """
 
- 
+ #WHERE
+  #          a.event = 'Dock'
     # Fetch the data into a DataFrame
     df_resupply = pd.read_sql(query_category, engine)
     flights.load_flights_data(df_resupply)
+
+    print('FLIGHTS: ', df_resupply)
 
     # Dispose the SQLAlchemy engine
     engine.dispose()

@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const datesCrewRS = df3Data.data.map(entry => entry.datedim.split('T')[0]);
                         const datesFlights = df4Data.data.map(entry => entry.datedim.split('T')[0]);
                         const flightsCount = Object.keys(datesFlights).length;
+                        const eventType = df4Data.data.map(entry => entry.event);
                         console.log('flight count: ', flightsCount)                   
                         const nasaCounts = df1Data.data.map(entry => entry.nasa_count);
                         const rsaCounts = df1Data.data.map(entry => entry.rsa00_count);
@@ -92,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 y: nasaCounts,
                                 type: 'scatter',
                                 name: 'NASA Count',
+                    
                             },
                             {
                                 x: datesFlights,
@@ -101,7 +103,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                 marker: {
                                 color: 'red',
                                 size: 20,
-                                }
+                                },
+                                text: eventType
                             },
                             {
                                 x: dates,
@@ -163,7 +166,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     const datesCrewRS = df3Data.data.map(entry => entry.datedim.split('T')[0]);
                     const datesFlights = df4Data.data.map(entry => entry.datedim.split('T')[0]);
                     const flightsCount = Object.keys(datesFlights).length;
-                    console.log('flight count: ', flightsCount)  
+                    const eventType = df4Data.data.map(entry => entry.event);
+                    console.log('flight count: ', flightsCount)
+                    console.log('EventType: ', eventType)  
                     if (data.category == 'US-Water') {
                         waterCounts = df1Data.data.map(entry => entry.corrected_potableL);
                         replenishdCounts = df1Data.data.map(entry => entry.resupply_potableL);
@@ -187,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         resupply_n2 = df1Data.data.map(entry => entry.resupply_n2kg);
                         resupply_air = df1Data.data.map(entry => entry.resupply_air_kg);
                     }
-
+                    
                     const usCrewCounts = df2Data.data.map(entry => entry.US_crew_count);
                     const rsCrewCounts = df3Data.data.map(entry => entry.RS_crew_count);
                     //Plot for water
@@ -208,7 +213,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 marker: {
                                 color: 'red',
                                 size: 20,
-                                }
+                                },
+                                text: eventType
+
                             },
 
                             {
@@ -255,6 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     type: 'scatter',
                                     name: 'US O2',
                                 },
+
                                 {
                                     x: datesFlights,
                                     y: flightsCount,
@@ -263,7 +271,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                     marker: {
                                     color: 'red',
                                     size: 20,
-                                    }
+                                    },
+                                    text: eventType
+
                                 },
                                 {
                                     x: dates,
