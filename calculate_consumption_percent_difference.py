@@ -95,8 +95,6 @@ def createRequest(consumables, data):
     # Dispose the SQLAlchemy engine
     engine.dispose()
 
-    # print the dictionary of dataframes
-    print('Print the dict of dfs: ', frames)
     category_info = category_info.to_json(orient='table')
 
 
