@@ -6,6 +6,10 @@ import json as js
 from calculate_consumption_percent_difference import createRequest
 from flight_plan import getFlights
 from flights import flights
+from waterAndGases import waterAndGases
+from waterAndGas_consumption import getWaterAndGas
+from crews import crews
+from crews_query import getCrewCounts
 
 app = Flask(__name__)
 
@@ -30,50 +34,51 @@ def consumable():
 
     flight = flights()
     flights_data = getFlights(flight, data)
-    
-     # Create an instance of the Consumables class
-    consumables = Consumables()
-    results = createRequest(consumables, data)
 
-    print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
+    crew = crews()
+    crew_data = getCrewCounts(crew, data)
 
-    # Get the consumables and crew counts for the date range
-    consumables_data = results['df1']
-    UScrew_counts_data = results['df2']
-    RScrew_counts_data = results['df3']
-
-    #print('consumables_data results:', consumables_data)
-    #print('crew_counts_data results:', UScrew_counts_data)
-    #print('crew_counts_data results:', RScrew_counts_data)
-    consumables_json = consumables_data.to_json(orient='table')
+    UScrew_counts_data = crew_data['df1']
+    RScrew_counts_data = crew_data['df2']
     UScrew_counts_json = UScrew_counts_data.to_json(orient='table')
     RScrew_counts_json = RScrew_counts_data.to_json(orient='table')
 
-    #print('consumables json:', consumables_json)
-    #print('crew counts json: ', UScrew_counts_json)
-    #print('crew counts json: ', RScrew_counts_json)
+    if data['category'] != 'RS-Water' and data['category'] != 'US-Water' and data['category'] != 'Gases':
+        
+        # Create an instance of the Consumables class
+        consumables = Consumables()
+        results = createRequest(consumables, data)
 
-    newData = {
-            consumables_json,
-            UScrew_counts_json,
-            RScrew_counts_json
-        }
+        print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
 
-    #print('new Data:', newData)
+        # Get the consumables and crew counts for the date range
+        consumables_json = results
 
-    df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data]
+        #List to make keys for dictionary
+        df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data]
 
-    frames = {}
+        frames = {}
 
-    for i, Any in enumerate(df_list):
-      frames[f'df{i+1}'] = Any
-    #print('frames: ', frames)
+        for i, Any in enumerate(df_list):
+            frames[f'df{i+1}'] = Any
+            newDataJson = js.dumps(frames)
 
-    newDataJson = js.dumps(frames)
+        print('Json string of data: ', newDataJson)
 
-    print('Json string of data: ', newDataJson)
+        return jsonify(newDataJson)
+    else:
+        waterAndGas = waterAndGases()
+        results = getWaterAndGas(waterAndGas, data)
+        print('You selected water or Gas.', results)
+        df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data]
 
-    return jsonify(newDataJson)
+        frames = {}
+
+        for i, Any in enumerate(df_list):
+            frames[f'df{i+1}'] = Any
+            newDataJson = js.dumps(frames)
+
+        return jsonify(newDataJson)
 
 
 

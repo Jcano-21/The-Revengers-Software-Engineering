@@ -91,22 +91,13 @@ def createRequest(consumables, data):
     print('Requesting', data['category'], 'from class.')
 
     category_info = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
-    RS_crew_info, US_crew_info = consumables.get_Ccount_for_date_range(data['start_date'], data['end_date'])
 
     # Dispose the SQLAlchemy engine
     engine.dispose()
 
-    df_list = [category_info, US_crew_info, RS_crew_info]
-
-    # create an empty dictionary
-    frames = {}
-
-    # loop through the list of dataframes and assign each to a key
-    for i, df in enumerate(df_list):
-      frames[f'df{i+1}'] = df
-
     # print the dictionary of dataframes
     print('Print the dict of dfs: ', frames)
+    category_info = category_info.to_json(orient='table')
 
 
-    return(frames)
+    return(category_info)
