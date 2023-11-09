@@ -64,14 +64,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     const df1Data = JSON.parse(result.df1);
                     const df2Data = JSON.parse(result.df2);
                     const df3Data = JSON.parse(result.df3);
+                    const df4Data = JSON.parse(result.df4)
                     console.log('DF1: ', df1Data);
                     console.log('DF2: ', df2Data);
                     console.log('DF3: ', df3Data);
+                    console.log('DF4: ', df4Data);
 
                     // Extract data for plotting
                     const dates = df1Data.data.map(entry => entry.datedim.split('T')[0]);
                     const datesCrewUS = df2Data.data.map(entry => entry.datedim.split('T')[0]);
                     const datesCrewRS = df3Data.data.map(entry => entry.datedim.split('T')[0]);
+                    const datesFlights = df4Data.data.map(entry => entry.datedim.split('T')[0]);
+                    const flightsCount = Object.keys(datesFlights).length;
+                    console.log('flight count: ', flightsCount)                   
                     const nasaCounts = df1Data.data.map(entry => entry.nasa_count);
                     const rsaCounts = df1Data.data.map(entry => entry.rsa00_count);
                     const distinctIdCounts = df1Data.data.map(entry => entry.distinct_id_count_categories);
@@ -86,6 +91,12 @@ document.addEventListener("DOMContentLoaded", function () {
                             y: nasaCounts,
                             type: 'scatter',
                             name: 'NASA Count',
+                        },
+                        {
+                            x: datesFlights,
+                            y: flightsCount,
+                            type: 'scatter',
+                            name: 'Resupply',
                         },
                         {
                             x: dates,
