@@ -95,8 +95,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         {
                             x: datesFlights,
                             y: flightsCount,
-                            type: 'scatter',
                             name: 'Resupply',
+                            mode: 'markers',
+                            marker: {
+                            color: 'red',
+                            size: 20,
+                            }
                         },
                         {
                             x: dates,

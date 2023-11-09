@@ -41,7 +41,7 @@ def createRequest(consumables, data):
                 iss_flight_plan_crew a
             WHERE
                 a.crew_type = '{crew_type}'
-                AND a.datedim BETWEEN '{data['start_date']}' AND '{data['end_date']}'  -- Include date range condition
+                AND a.datedim BETWEEN '{data['start_date']}' AND '{data['end_date']}'
             GROUP BY
                 a.datedim
             ORDER BY
