@@ -88,7 +88,6 @@ def createRequest(consumables, data):
 
     print(f'Requesting crew counts from dates. ')
 
-    print('Requesting', data['category'], 'from class.')
 
     category_info = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
 

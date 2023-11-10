@@ -48,14 +48,19 @@ def consumable():
         # Create an instance of the Consumables class
         consumables = Consumables()
         results = createRequest(consumables, data)
+        if (data['category'] != 'Food'):
+            consumption = consumables.calculate_something(data['start_date'], data['end_date'], data['category'])
 
-        print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
+        #print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
 
         # Get the consumables and crew counts for the date range
         consumables_json = results
 
         #List to make keys for dictionary
-        df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data]
+        if (data['category'] != 'Food'):
+            df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data, consumption]
+        else:
+            df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data]
 
         frames = {}
 
@@ -63,7 +68,7 @@ def consumable():
             frames[f'df{i+1}'] = Any
             newDataJson = js.dumps(frames)
 
-        print('Json string of data: ', newDataJson)
+        #print('Json string of data: ', newDataJson)
 
         return jsonify(newDataJson)
     else:
@@ -79,8 +84,6 @@ def consumable():
             newDataJson = js.dumps(frames)
 
         return jsonify(newDataJson)
-
-
-
+    
 if __name__ == "__main__":
     app.run(debug=True)

@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
     // Select the button element by its ID
+    const itemRate = document.getElementById("top");
     const itemSelectionButton = document.getElementById("itemSelection");
 
      // Select the input elements by their IDs
@@ -60,17 +61,30 @@ document.addEventListener("DOMContentLoaded", function () {
                     result = JSON.parse(result);
 
                     console.log('Print results: ', result);
-
+                    dataCheck = data.category;
                     if ((data.category !== 'US-Water') && (data.category !== 'RS-Water') && (data.category !== 'Gases') ) {
                         const df1Data = JSON.parse(result.df1);
                         const df2Data = JSON.parse(result.df2);
                         const df3Data = JSON.parse(result.df3);
                         const df4Data = JSON.parse(result.df4);
+                        if (dataCheck !== 'Food') {
+                            df5Data = JSON.parse(result.df5);
+                            console.log('DF5: ', df5Data);
+
+                        }
                         console.log('DF1: ', df1Data);
                         console.log('DF2: ', df2Data);
                         console.log('DF3: ', df3Data);
                         console.log('DF4: ', df4Data);
 
+                        if (dataCheck !== 'Food'){
+                        //Fill Warning box with assume rate, calculated rate, and percent difference
+                        itemRate.textContent = 'A_Rate: ' + df5Data.rate.toFixed(4) + ' C_Rate: ' + df5Data.calculated_rate.toFixed(4) + ' P_Diff: '  + df5Data.Percent_Difference.toFixed(3);
+                        }
+                        else {
+                            itemRate.textContent = 'Rate not yet calculated.'
+
+                        }
                         // Extract data for plotting
                         const dates = df1Data.data.map(entry => entry.datedim.split('T')[0]);
                         const datesCrewUS = df2Data.data.map(entry => entry.datedim.split('T')[0]);
@@ -171,6 +185,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log('EventType: ', eventType)  
                     if (data.category == 'US-Water') {
                         waterCounts = df1Data.data.map(entry => entry.corrected_potableL);
+                        technical = df1Data.data.map(entry => entry.corrected_technicalL);
+                        technicalResupply = df1Data.data.map(entry => entry.resupply_technicalL);
                         replenishdCounts = df1Data.data.map(entry => entry.resupply_potableL);
                         waterName = 'US Water'
                     } 
@@ -182,21 +198,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     else if (data.category == 'Gases') {
-                        us_o2 = df1Data.data.map(entry => entry.us_o2kg);
-                        rs_o2 = df1Data.data.map(entry => entry.rs_o2kg);
-                        us_n2 = df1Data.data.map(entry => entry.us_n2kg);
-                        rs_n2 = df1Data.data.map(entry => entry.rs_n2kg);
-                        adjusted_o2 = df1Data.data.map(entry => entry.adjusted_o2kg);
-                        adjusted_n2 = df1Data.data.map(entry => entry.adjusted_n2kg);
-                        resupply_o2 = df1Data.data.map(entry => entry.resupply_o2kg);
-                        resupply_n2 = df1Data.data.map(entry => entry.resupply_n2kg);
+                        us_o2 = df1Data.data.map(entry => entry.US_O2kg);
+                        rs_o2 = df1Data.data.map(entry => entry.RS_O2kg);
+                        us_n2 = df1Data.data.map(entry => entry.US_N2kg);
+                        rs_n2 = df1Data.data.map(entry => entry.RS_N2kg);
+                        adjusted_o2 = df1Data.data.map(entry => entry.adjusted_O2kg);
+                        adjusted_n2 = df1Data.data.map(entry => entry.adjusted_N2kg);
+                        resupply_o2 = df1Data.data.map(entry => entry.resupply_O2kg);
+                        resupply_n2 = df1Data.data.map(entry => entry.resupply_N2kg);
                         resupply_air = df1Data.data.map(entry => entry.resupply_air_kg);
                     }
                     
                     const usCrewCounts = df2Data.data.map(entry => entry.US_crew_count);
                     const rsCrewCounts = df3Data.data.map(entry => entry.RS_crew_count);
                     //Plot for water
-                    if (data.category != 'Gases') {
+                    if (data.category == 'US-Water') {
                         // Create a Plotly plot using the extracted data
                         const data = [
                             {
@@ -205,6 +221,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                 type: 'scatter',
                                 name: waterName,
                             },
+                            {
+                                x: dates,
+                                y: technical,
+                                type: 'scatter',
+                                name: 'Technical',
+                            },
+
                             {
                                 x: datesFlights,
                                 y: flightsCount,
@@ -251,6 +274,65 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         Plotly.newPlot('tester', data, layout);
                         }
+
+                        else if (data.category == 'RS-Water') {
+                                // Create a Plotly plot using the extracted data
+                                const data = [
+                                    {
+                                        x: dates,
+                                        y: waterCounts,
+                                        type: 'scatter',
+                                        name: waterName,
+                                    },
+        
+                                    {
+                                        x: datesFlights,
+                                        y: flightsCount,
+                                        name: 'Resupply',
+                                        mode: 'markers',
+                                        marker: {
+                                        color: 'red',
+                                        size: 20,
+                                        },
+                                        text: eventType
+        
+                                    },
+        
+                                    {
+                                        x: dates,
+                                        y: replenishdCounts,
+                                        type: 'linear',
+                                        name: 'Replenish',
+                                    },
+                                    
+                                    {
+                                        x: datesCrewUS,
+                                        y: usCrewCounts,
+                                        type: 'linear',
+                                        name: 'US Crew Count',
+                                    },
+                                    {
+                                        x: datesCrewRS,
+                                        y: rsCrewCounts,
+                                        type: 'linear',
+                                        name: 'RS Crew Count',
+                                    },
+                                ];
+        
+                                const layout = {
+                                    xaxis: {
+                                        title: 'Date',
+                                    },
+                                    yaxis: {
+                                        title: 'Count',
+                                    },
+                                    margin: { t: 0 },
+                                };
+        
+                                Plotly.newPlot('tester', data, layout);
+                            }
+        
+                        
 
                         //Plot for Gases
                         else if (data.category == 'Gases') {
