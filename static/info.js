@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const datesFlights = df4Data.data.map(entry => entry.datedim.split('T')[0]);
                         const flightsCount = Object.keys(datesFlights).length;
                         const eventType = df4Data.data.map(entry => entry.event);
+                        const evaType = df4Data.data.map(entry => entry.eva_type);
                         console.log('flight count: ', flightsCount)                   
                         const nasaCounts = df1Data.data.map(entry => entry.nasa_count);
                         const rsaCounts = df1Data.data.map(entry => entry.rsa00_count);
@@ -112,13 +113,27 @@ document.addEventListener("DOMContentLoaded", function () {
                             {
                                 x: datesFlights,
                                 y: flightsCount,
-                                name: 'Resupply',
+                                name: 'Vehicle Info 2',
                                 mode: 'markers',
                                 marker: {
                                 color: 'red',
                                 size: 20,
                                 },
                                 text: eventType
+
+                            },
+
+                            {
+                                x: datesFlights,
+                                y: flightsCount,
+                                name: 'Vehicle Info 1',
+                                mode: 'markers',
+                                marker: {
+                                color: 'blue',
+                                size: 20,
+                                },
+                                text: evaType
+
                             },
                             {
                                 x: dates,
@@ -175,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log('DF4: ', df4Data);
                     
                     // Extract data for plotting
+                    const evaType = df4Data.data.map(entry => entry.eva_type);
                     const dates = df1Data.data.map(entry => entry.datedim.split('T')[0]);
                     const datesCrewUS = df2Data.data.map(entry => entry.datedim.split('T')[0]);
                     const datesCrewRS = df3Data.data.map(entry => entry.datedim.split('T')[0]);
@@ -231,13 +247,26 @@ document.addEventListener("DOMContentLoaded", function () {
                             {
                                 x: datesFlights,
                                 y: flightsCount,
-                                name: 'Resupply',
+                                name: 'Vehicle Info 2',
                                 mode: 'markers',
                                 marker: {
                                 color: 'red',
                                 size: 20,
                                 },
                                 text: eventType
+
+                            },
+
+                            {
+                                x: datesFlights,
+                                y: flightsCount,
+                                name: 'Vehicle Info 1',
+                                mode: 'markers',
+                                marker: {
+                                color: 'blue',
+                                size: 20,
+                                },
+                                text: evaType
 
                             },
 
@@ -288,14 +317,27 @@ document.addEventListener("DOMContentLoaded", function () {
                                     {
                                         x: datesFlights,
                                         y: flightsCount,
-                                        name: 'Resupply',
+                                        name: 'Vehicle Info 2',
                                         mode: 'markers',
                                         marker: {
                                         color: 'red',
                                         size: 20,
                                         },
                                         text: eventType
-        
+    
+                                    },
+    
+                                    {
+                                        x: datesFlights,
+                                        y: flightsCount,
+                                        name: 'Vehicle Info 1',
+                                        mode: 'markers',
+                                        marker: {
+                                        color: 'blue',
+                                        size: 20,
+                                        },
+                                        text: evaType
+    
                                     },
         
                                     {
@@ -348,7 +390,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 {
                                     x: datesFlights,
                                     y: flightsCount,
-                                    name: 'Resupply',
+                                    name: 'Vehicle Info 2',
                                     mode: 'markers',
                                     marker: {
                                     color: 'red',
@@ -357,6 +399,20 @@ document.addEventListener("DOMContentLoaded", function () {
                                     text: eventType
 
                                 },
+
+                                {
+                                    x: datesFlights,
+                                    y: flightsCount,
+                                    name: 'Vehicle Info 1',
+                                    mode: 'markers',
+                                    marker: {
+                                    color: 'blue',
+                                    size: 20,
+                                    },
+                                    text: evaType
+
+                                },
+
                                 {
                                     x: dates,
                                     y: rs_o2,

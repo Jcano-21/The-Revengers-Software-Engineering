@@ -60,6 +60,8 @@ def createRequest(consumables, data):
         # SQL query for the current category
     if data['category'] == 'Food-US':
         dataCat = '6'
+    elif data['category'] == 'Food':
+        dataCat = '6'
     elif data['category'] == 'Food-RS':
         dataCat = '7'
     elif data['category'] == 'ACY Inserts':

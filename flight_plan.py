@@ -24,6 +24,7 @@ def getFlights(flights, data):
         SELECT
             a.datedim,
             a.vehicle_name,
+            a.eva_type,
             a.event
         FROM
             iss_flight_plan a
