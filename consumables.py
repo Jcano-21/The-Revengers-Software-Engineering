@@ -8,7 +8,7 @@ class Consumables:
         self._RS_crew_count = {}  # Private attribute for RS crew count
         self._US_crew_count = {}  # Private attribute for US crew count
 
-    def calculate_something(self, start_date, end_date, category):
+    def calculate_something(self, start_date, end_date, category, crewData):
         # A private method for data calculation
         # Filter category_info based on category
             category_info = self._category_data[category]

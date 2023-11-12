@@ -49,7 +49,7 @@ def consumable():
         consumables = Consumables()
         results = createRequest(consumables, data)
         if (data['category'] != 'Food'):
-            consumption = consumables.calculate_something(data['start_date'], data['end_date'], data['category'])
+            consumption = consumables.calculate_something(data['start_date'], data['end_date'], data['category'], crew_data)
 
         #print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
 
