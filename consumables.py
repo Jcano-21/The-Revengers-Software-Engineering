@@ -24,9 +24,17 @@ class Consumables:
 
             # Filter based on date range
             newStart = category_info.datedim.iloc[0]
-            start_date_consumption = category_info[(category_info['datedim'] == newStart)]
+            start_date_consumption = category_info[(category_info['datedim'] == start_date)]
+            print('debug print BEFORE IF: ', start_date_consumption)
+            if start_date_consumption.empty:
+                start_date_consumption = category_info[(category_info['datedim'] == newStart)]
+
             print('debug print: ', start_date_consumption)
             end_date_consumption = category_info[(category_info['datedim'] == end_date)]
+            print('debut PRINT BEFORE IF: ', end_date_consumption)
+            if end_date_consumption.empty:
+                end_date_consumption = category_info[(category_info['datedim'] == category_info.datedim.iloc[-2])]
+            print('debut PRINT: ', end_date_consumption)
             difference_consumption = (end_date_consumption.discard_count.iloc[0] + end_date_consumption.discard_count.iloc[1]) - (start_date_consumption.discard_count.iloc[0] + start_date_consumption.discard_count.iloc[1])
             print('DATES !!!!!!!!!!!!!!', start_date_consumption, end_date_consumption)
             print('DIFFERENCE between dates: ', difference_consumption)
@@ -88,12 +96,34 @@ class Consumables:
 
             # Filter based on date range
             category_info = category_info[(category_info['datedim'] >= start_date) & (category_info['datedim'] <= end_date)]
+            rs_consumables = category_info[(category_info['current_ip_owner'] == 'RSA00')] 
+            us_consumables = category_info[(category_info['current_ip_owner'] == 'NASA')]
+        
+        # Assuming df1 and df2 are your two DataFrames
+        # Merge the two DataFrames on 'datedim'
+        merged_df = pd.merge(rs_consumables, us_consumables, on='datedim', suffixes=('_df1', '_df2'))
 
-        # Add print statements to display the results
-        print("Category Info:")
+        # Sum the count columns
+        merged_df['nasa_count'] = merged_df['nasa_count_df1'] + merged_df['nasa_count_df2']
+        merged_df['rsa00_count'] = merged_df['rsa00_count_df1'] + merged_df['rsa00_count_df2']
+        merged_df['distinct_id_count_categories'] = merged_df['distinct_id_count_categories_df1'] + merged_df['distinct_id_count_categories_df2']
+        merged_df['discard_count'] = merged_df['discard_count_df1'] + merged_df['discard_count_df2']
+        merged_df['distinct_discard_difference'] = merged_df['distinct_discard_difference_df1'] + merged_df['distinct_discard_difference_df2']
+
+        # Select only the relevant columns
+        result_df = merged_df[['datedim', 'distinct_id_count_categories', 'discard_count', 'distinct_discard_difference']]
+
+        print("MERGED DATAFRAME: ", result_df)
+
+            # Add corresponding columns from df2 to the new DataFrame
+        print("Category Info:") 
         print(category_info)
 
-        return category_info
+        print("RS CONSUMABLES: ", rs_consumables)
+        print("US CONSUMBABLES: ", us_consumables)
+        print("MERGED DATAFRAME: ", result_df)
+
+        return rs_consumables, us_consumables, result_df
 
     def get_Ccount_for_date_range(self, start_date, end_date):
         print("Date Range - Start Date:", start_date)

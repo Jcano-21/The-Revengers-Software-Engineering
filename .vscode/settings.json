@@ -1,0 +1,4 @@
+{
+    "terminal.integrated.tabs.showActiveTerminal": "singleTerminal",
+    "terminal.integrated.tabs.showActions": "singleTerminal"
+}

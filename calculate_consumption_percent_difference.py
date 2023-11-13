@@ -18,45 +18,6 @@ def createRequest(consumables, data):
     engine = sa.create_engine(connection_url)
 
     print("Engine Created!")
-    # List of category names
-    categories = [
-        'ACY Inserts',
-        'Filter Inserts',
-        'Food',
-        'Food-RS',
-        'Food-US',
-        'KTO',
-        'Pretreat Tanks'
-    ]
-
-
-    # Loop through crew types
-    for crew_type in ['US', 'RS']:
-        # SQL query for the current crew type
-        query_crew = f"""
-            SELECT
-                a.datedim,
-                SUM(a.crew_count) AS {crew_type}_crew_count
-            FROM
-                iss_flight_plan_crew a
-            WHERE
-                a.crew_type = '{crew_type}'
-                AND a.datedim BETWEEN '{data['start_date']}' AND '{data['end_date']}'
-            GROUP BY
-                a.datedim
-            ORDER BY
-                a.datedim;
-            """
-
-        # Fetch the data into a DataFrame
-        df_crew = pd.read_sql(query_crew, engine)
-        if crew_type == 'RS':
-            consumables.load_RS_crew_count(df_crew)
-        elif crew_type == 'US':
-            consumables.load_US_crew_count(df_crew)
-
-    # Loop through categories
-    #for category in categories:
         # SQL query for the current category
     if data['category'] == 'Food-US':
         dataCat = '6'
@@ -80,7 +41,8 @@ def createRequest(consumables, data):
             SUM(CASE WHEN a.categoryid IN ('{dataCat}') AND a.current_ip_owner = 'NASA' THEN 1 ELSE 0 END) AS nasa_count,
             SUM(CASE WHEN a.categoryid IN ('{dataCat}') AND a.current_ip_owner = 'RSA00' THEN 1 ELSE 0 END) AS rsa00_count,
             COUNT(DISTINCT CASE WHEN a.categoryid IN ('{dataCat}') THEN a.id END) AS distinct_id_count_categories,
-            COUNT(DISTINCT CASE WHEN  a.categoryid IN ('{dataCat}') AND a.status = 'discard' THEN a.id END) AS discard_count
+            COUNT(DISTINCT CASE WHEN a.categoryid IN ('{dataCat}') AND a.status = 'discard' THEN a.id END) AS discard_count,
+            COUNT(DISTINCT CASE WHEN a.categoryid IN ('{dataCat}') THEN a.id END) - COUNT(DISTINCT CASE WHEN a.categoryid IN ('{dataCat}') AND a.status = 'discard' THEN a.id END) AS distinct_discard_difference
         FROM
             inventory_msc a
         WHERE
@@ -90,7 +52,8 @@ def createRequest(consumables, data):
         GROUP BY
             a.datedim, a.current_ip_owner
         ORDER BY
-            a.datedim;
+        a.datedim;
+
         """
 
  
@@ -104,12 +67,22 @@ def createRequest(consumables, data):
     print(f'Requesting crew counts from dates. ')
 
 
-    category_info = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
+    rs_consumables, us_consumables, category_info = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
 
     # Dispose the SQLAlchemy engine
     engine.dispose()
 
-    category_info = category_info.to_json(orient='table')
+    df_list = [rs_consumables, us_consumables, category_info]
+
+    # create an empty dictionary
+    frames = {}
+
+    # loop through the list of dataframes and assign each to a key
+    for i, df in enumerate(df_list):
+      frames[f'df{i+1}'] = df
+
+    # print the dictionary of dataframes
+    print('Print the dict of dfs: ', frames)
 
 
-    return(category_info)
+    return(frames)

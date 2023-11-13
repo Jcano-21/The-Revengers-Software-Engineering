@@ -48,17 +48,23 @@ def consumable():
         # Create an instance of the Consumables class
         consumables = Consumables()
         results = createRequest(consumables, data)
+        rs_consumables = results['df1']
+        us_consumables = results['df2']
+        category_info = results['df3']
+        rs_consumables_json = rs_consumables.to_json(orient='table')
+        us_consumables_json = us_consumables.to_json(orient='table')
+        consumables_json = category_info.to_json(orient='table')
+
+
         if (data['category'] != 'Food'):
             consumption = consumables.calculate_something(data['start_date'], data['end_date'], data['category'], crew_data)
 
         #print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
 
-        # Get the consumables and crew counts for the date range
-        consumables_json = results
 
         #List to make keys for dictionary
         if (data['category'] != 'Food'):
-            df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data, consumption]
+            df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data, consumption, rs_consumables_json, us_consumables_json]
         else:
             df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data]
 

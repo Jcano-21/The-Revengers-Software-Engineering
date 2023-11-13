@@ -69,6 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         const df4Data = JSON.parse(result.df4);
                         if (dataCheck !== 'Food') {
                             df5Data = JSON.parse(result.df5);
+                            df6Data = JSON.parse(result.df6);
+                            df7Data = JSON.parse(result.df7);
                             console.log('DF5: ', df5Data);
 
                         }
@@ -93,26 +95,42 @@ document.addEventListener("DOMContentLoaded", function () {
                         const flightsCount = Object.keys(datesFlights).length;
                         const eventType = df4Data.data.map(entry => entry.event);
                         const evaType = df4Data.data.map(entry => entry.eva_type);
-                        console.log('flight count: ', flightsCount)                   
-                        const nasaCounts = df1Data.data.map(entry => entry.nasa_count);
-                        const rsaCounts = df1Data.data.map(entry => entry.rsa00_count);
-                        const distinctIdCounts = df1Data.data.map(entry => entry.distinct_id_count_categories);
-                        const discardCounts = df1Data.data.map(entry => entry.discard_count);
+                        const vehicleName = df4Data.data.map(entry => entry.vehicle_name);
+                        console.log('flight count: ', flightsCount)
+                        const rsaDates = df6Data.data.map(entry => entry.datedim.split('T')[0]);
+                        const nasaDates = df7Data.data.map(entry => entry.datedim.split('T')[0]);                   
+                        const nasaCounts = df7Data.data.map(entry => entry.distinct_id_count_categories);
+                        const rsaCounts = df6Data.data.map(entry => entry.distinct_id_count_categories);
+                        //const distinctIdCounts = df1Data.data.map(entry => entry.distinct_id_count_categories);
+                        const totalCounts = df1Data.data.map(entry => entry.distinct_id_count_categories);
+                        const totalDiscard = df1Data.data.map(entry => entry.discard_count);
+                        const totalDifference = df1Data.data.map(entry => entry.distinct_discard_difference);
+                        const rsDiscard = df6Data.data.map(entry => entry.discard_count);
+                        const usDiscard = df7Data.data.map(entry => entry.discard_count);
+                        const rsDifference = df6Data.data.map(entry => entry.distinct_discard_difference);
+                        const usDifference = df7Data.data.map(entry => entry.distinct_discard_difference);
                         const usCrewCounts = df2Data.data.map(entry => entry.US_crew_count);
                         const rsCrewCounts = df3Data.data.map(entry => entry.RS_crew_count);
 
                         // Create a Plotly plot using the extracted data
                         const data = [
-                            {
-                                x: dates,
-                                y: nasaCounts,
-                                type: 'scatter',
-                                name: 'NASA Count',
-                    
-                            },
+                            
                             {
                                 x: datesFlights,
-                                y: flightsCount,
+                                y: 6000,
+                                name: 'Vehicle Info 3',
+                                mode: 'markers',
+                                marker: {
+                                color: 'yellow',
+                                size: 30,
+                                },
+                                text: vehicleName
+
+                            },
+
+                            {
+                                x: datesFlights,
+                                y: 6000,
                                 name: 'Vehicle Info 2',
                                 mode: 'markers',
                                 marker: {
@@ -125,34 +143,76 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             {
                                 x: datesFlights,
-                                y: flightsCount,
+                                y: 6000,
                                 name: 'Vehicle Info 1',
                                 mode: 'markers',
                                 marker: {
                                 color: 'blue',
-                                size: 20,
+                                size: 10,
                                 },
                                 text: evaType
 
                             },
+
                             {
-                                x: dates,
+                                x: nasaDates,
+                                y: nasaCounts,
+                                type: 'scatter',
+                                name: 'NASA Count',
+                            },
+
+                            {
+                                x: rsaDates,
                                 y: rsaCounts,
-                                type: 'linear',
+                                type: 'scatter',
                                 name: 'RSA00 Count',
                             },
                             {
                                 x: dates,
-                                y: distinctIdCounts,
+                                y:  totalCounts,
+                                type: 'scatter',
+                                name: 'Total Count',
+                            },
+                            {
+                                x: rsaDates,
+                                y: rsDiscard,
                                 type: 'linear',
-                                name: 'Distinct ID Count',
+                                name: 'RS Discard',
+                            },
+                            {
+                                x: nasaDates,
+                                y: usDiscard,
+                                type: 'linear',
+                                name: 'US Discard',
                             },
                             {
                                 x: dates,
-                                y: discardCounts,
-                                type: 'linear',
-                                name: 'Discard Count',
+                                y:  totalDiscard,
+                                type: 'scatter',
+                                name: 'Total Discard',
                             },
+
+                            {
+                                x: rsaDates,
+                                y: rsDifference,
+                                type: 'scatter',
+                                name: 'RS remain.',
+                            },
+
+                            {
+                                x: nasaDates,
+                                y: usDifference,
+                                type: 'scatter',
+                                name: 'US remain.',
+                            },
+
+                            {
+                                x: dates,
+                                y: totalDifference,
+                                type: 'scatter',
+                                name: 'Total remain.',
+                            },
+
                             {
                                 x: datesCrewUS,
                                 y: usCrewCounts,
@@ -197,6 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const datesFlights = df4Data.data.map(entry => entry.datedim.split('T')[0]);
                     const flightsCount = Object.keys(datesFlights).length;
                     const eventType = df4Data.data.map(entry => entry.event);
+                    const vehicleName = df4Data.data.map(entry => entry.vehicle_name);
                     console.log('flight count: ', flightsCount)
                     console.log('EventType: ', eventType)  
                     if (data.category == 'US-Water') {
@@ -247,6 +308,19 @@ document.addEventListener("DOMContentLoaded", function () {
                             {
                                 x: datesFlights,
                                 y: flightsCount,
+                                name: 'Vehicle Info 3',
+                                mode: 'markers',
+                                marker: {
+                                color: 'yellow',
+                                size: 30,
+                                },
+                                text: vehicleName
+
+                            },
+
+                            {
+                                x: datesFlights,
+                                y: flightsCount,
                                 name: 'Vehicle Info 2',
                                 mode: 'markers',
                                 marker: {
@@ -264,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 mode: 'markers',
                                 marker: {
                                 color: 'blue',
-                                size: 20,
+                                size: 10,
                                 },
                                 text: evaType
 
@@ -313,6 +387,19 @@ document.addEventListener("DOMContentLoaded", function () {
                                         type: 'scatter',
                                         name: waterName,
                                     },
+
+                                    {
+                                        x: datesFlights,
+                                        y: flightsCount,
+                                        name: 'Vehicle Info 3',
+                                        mode: 'markers',
+                                        marker: {
+                                        color: 'yellow',
+                                        size: 30,
+                                        },
+                                        text: vehicleName
+        
+                                    },
         
                                     {
                                         x: datesFlights,
@@ -334,7 +421,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                         mode: 'markers',
                                         marker: {
                                         color: 'blue',
-                                        size: 20,
+                                        size: 10,
                                         },
                                         text: evaType
     
@@ -390,6 +477,19 @@ document.addEventListener("DOMContentLoaded", function () {
                                 {
                                     x: datesFlights,
                                     y: flightsCount,
+                                    name: 'Vehicle Info 3',
+                                    mode: 'markers',
+                                    marker: {
+                                    color: 'yellow',
+                                    size: 30,
+                                    },
+                                    text: vehicleName
+    
+                                },
+
+                                {
+                                    x: datesFlights,
+                                    y: flightsCount,
                                     name: 'Vehicle Info 2',
                                     mode: 'markers',
                                     marker: {
@@ -407,7 +507,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     mode: 'markers',
                                     marker: {
                                     color: 'blue',
-                                    size: 20,
+                                    size: 10,
                                     },
                                     text: evaType
 
