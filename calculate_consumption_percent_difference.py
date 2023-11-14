@@ -17,7 +17,9 @@ def createRequest(consumables, data):
     # Create an SQLAlchemy engine
     engine = sa.create_engine(connection_url)
 
-    print("Engine Created!")
+    print("Inside query start_date: ", )
+
+    print("Engine Created!", data['start_date'])
         # SQL query for the current category
     if data['category'] == 'Food-US':
         dataCat = '6'

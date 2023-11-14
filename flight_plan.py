@@ -14,6 +14,11 @@ def getFlights(flights, data):
     
     connection_url = f"mysql+pymysql://{username}:{password}@localhost/{db_name}"
 
+    if data['category'] == 'Gases':
+        columnSelect = 'event = \'EVA\' or (event = \'dock\'  and eva_type = \'resupply\')'
+    else:
+        columnSelect = 'event = \'dock\'  and eva_type = \'resupply\''
+
     # Create an SQLAlchemy engine
     engine = sa.create_engine(connection_url)
 
@@ -29,7 +34,7 @@ def getFlights(flights, data):
         FROM
             iss_flight_plan a
         WHERE
-            (a.event = 'dock' OR a.event = 'undock')
+            {columnSelect}
             AND a.datedim BETWEEN '{data['start_date']}' AND '{data['end_date']}'
         ORDER BY
             a.datedim;

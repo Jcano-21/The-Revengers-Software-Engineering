@@ -240,14 +240,26 @@ document.addEventListener("DOMContentLoaded", function () {
                         Plotly.newPlot('tester', data, layout);
                     }
                 else {
+                    //pars the json strings for water data
                     const df1Data = JSON.parse(result.df1);
                     const df2Data = JSON.parse(result.df2);
                     const df3Data = JSON.parse(result.df3);
                     const df4Data = JSON.parse(result.df4);
+                    //If category is US-Water or RS-Water fill in text box with rate usage data
+                    if ((data.category === 'US-Water' || data.category === 'RS-Water')) {
+                        const df5Data = JSON.parse(result.df5);
+                        itemRate.textContent = 'A_Rate: ' + df5Data.rate.toFixed(4) + ' C_Rate: ' + df5Data.calculated_rate.toFixed(4) + ' P_Diff: '  + df5Data.Percent_Difference.toFixed(3) 
+                        + '\n\n' + 'A_RateTech: ' + df5Data.rateTech.toFixed(4) + ' C_RateTech: ' + df5Data.calculated_rate_tech.toFixed(4) + ' P_Diff: '  + df5Data.Percent_DifferenceTech.toFixed(3) ;
+                        console.log('DF5: ', df5Data);
+                    }
+
+
                     console.log('DF1: ', df1Data);
                     console.log('DF2: ', df2Data);
                     console.log('DF3: ', df3Data);
                     console.log('DF4: ', df4Data);
+
+                    
                     
                     // Extract data for plotting
                     const evaType = df4Data.data.map(entry => entry.eva_type);
@@ -270,8 +282,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     else if (data.category == 'RS-Water') {
                         waterCounts = df1Data.data.map(entry => entry.remaining_potableL);
+                        waterCountsTech = df1Data.data.map(entry => entry.technicalL);
                         replenishdCounts = df1Data.data.map(entry => entry.rodnik_potableL);
-                        waterName = 'RS Water'
+                        waterName = 'Remain. Potable'
                     }
 
                     else if (data.category == 'Gases') {
@@ -302,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 x: dates,
                                 y: technical,
                                 type: 'scatter',
-                                name: 'Technical',
+                                name: 'Remain. Technical',
                             },
 
                             {
@@ -389,6 +402,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                     },
 
                                     {
+                                        x: dates,
+                                        y: waterCountsTech,
+                                        type: 'scatter',
+                                        name: 'Remain. Technical',
+                                    },
+
+                                    {
                                         x: datesFlights,
                                         y: flightsCount,
                                         name: 'Vehicle Info 3',
@@ -431,7 +451,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                         x: dates,
                                         y: replenishdCounts,
                                         type: 'linear',
-                                        name: 'Replenish',
+                                        name: 'Rodnik',
                                     },
                                     
                                     {

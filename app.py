@@ -81,8 +81,20 @@ def consumable():
         waterAndGas = waterAndGases()
         results = getWaterAndGas(waterAndGas, data)
         print('You selected water or Gas.', results)
-        df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data]
 
+        
+        if data['category'] == 'US-Water':
+            waterConsumption = waterAndGas.calculate_US_water(data['start_date'], data['end_date'])
+
+            df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data, waterConsumption]
+        elif data['category'] == 'RS-Water':
+            waterConsumption = waterAndGas.calculate_RS_water(data['start_date'], data['end_date'])
+
+            df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data, waterConsumption]       
+            
+        else:
+            df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data]
+        
         frames = {}
 
         for i, Any in enumerate(df_list):
