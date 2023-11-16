@@ -1,12 +1,16 @@
 import pandas as pd
 import json
+import numpy as np 
+import datetime
 
 
 class Consumables:
-    def __init__(self):
+    def __init__(self, category):
         self._category_data = {}  # Private attribute
         self._RS_crew_count = {}  # Private attribute for RS crew count
         self._US_crew_count = {}  # Private attribute for US crew count
+        self._resupply_dates = {}
+        self._category = category
 
     def calculate_something(self, start_date, end_date, category, crewData):
         # A private method for data calculation
@@ -21,6 +25,9 @@ class Consumables:
             # Convert start_date and end_date to datetime format
             start_date = pd.to_datetime(start_date)
             end_date = pd.to_datetime(end_date)
+            resupply_quantity_date = end_date + pd.DateOffset(days=1)
+            print('Resupply Date: !!!!!', resupply_quantity_date, 'previous day: ', end_date)
+            
 
             # Filter based on date range
             newStart = category_info.datedim.iloc[0]
@@ -30,12 +37,36 @@ class Consumables:
                 start_date_consumption = category_info[(category_info['datedim'] == newStart)]
 
             print('debug print: ', start_date_consumption)
-            end_date_consumption = category_info[(category_info['datedim'] == end_date)]
+            end_date_consumption = category_info[(category_info['datedim'] == end_date )]
+            resupply_quantity = category_info[(category_info['datedim'] == resupply_quantity_date )]
+            print('resupply quanity date', resupply_quantity)
+
             print('debut PRINT BEFORE IF: ', end_date_consumption)
             if end_date_consumption.empty:
                 end_date_consumption = category_info[(category_info['datedim'] == category_info.datedim.iloc[-2])]
+
+            whileCount = 1
+            dfLen = len(category_info) - len(end_date_consumption)
+            print('DF length: ', dfLen)
+            
+            while resupply_quantity.empty and whileCount < dfLen:
+                resupply_quantity = category_info[(category_info['datedim'] == resupply_quantity_date + pd.DateOffset(days=whileCount))]
+                whileCount = whileCount + 1
+
+
+            if not resupply_quantity.empty:
+                before_count = end_date_consumption.distinct_id_count_categories.iloc[0] + end_date_consumption.distinct_id_count_categories.iloc[-1]
+
+                print('quantity ', resupply_quantity.distinct_id_count_categories.iloc[0])
+                resupply_count = resupply_quantity.distinct_id_count_categories.iloc[0] + resupply_quantity.distinct_id_count_categories.iloc[-1]
+                resupply_diff = resupply_count - before_count
+                print(' resupply count: ', resupply_count)
+                print('Resupply difference', resupply_diff)
+            
+
             print('debut PRINT: ', end_date_consumption)
             difference_consumption = (end_date_consumption.discard_count.iloc[0] + end_date_consumption.discard_count.iloc[1]) - (start_date_consumption.discard_count.iloc[0] + start_date_consumption.discard_count.iloc[1])
+            
             print('DATES !!!!!!!!!!!!!!', start_date_consumption, end_date_consumption)
             print('DIFFERENCE between dates: ', difference_consumption)
             print('HEre is the category: ', category)
@@ -60,7 +91,13 @@ class Consumables:
 
             percent_difference = ((calculated_consumption - rates) * 100) / rates 
             print('PERCENT DIFFERENCE IN RATES: ', percent_difference)
-            consumption_data = {'rate': rates, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference}
+            
+            
+
+            if not resupply_quantity.empty:
+                consumption_data = {'rate': rates, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference, 'Diff_days': difference_in_days.days, 'Diff_Quantity':int(difference_consumption), 'Resupply_Count': int(resupply_diff) }
+            else:
+                consumption_data = {'rate': rates, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference, 'Diff_days': difference_in_days.days, 'Diff_Quantity':int(difference_consumption)}
             json_consumption_data = json.dumps(consumption_data)
             print('percent difference json: ', json_consumption_data)
             return json_consumption_data 
@@ -73,7 +110,11 @@ class Consumables:
 
     def load_US_crew_count(self, df):
         self._US_crew_count = df
-
+    
+    def load_resupply_dates(self, df):
+        self._resupply_dates = df
+        
+        
 
     def get_consumables_for_date_range(self, start_date, end_date, category):
         print("Category:", category)
@@ -161,6 +202,90 @@ class Consumables:
         print(US_crew_info)
 
         return RS_crew_info, US_crew_info
+    
+    def calulateResupply(self):
+        crewData = ''
+        category = self._category
+        category_data = self._resupply_dates
+        category_data_list = []
+        countL = 0
+        for index, row in category_data.iterrows(): 
+                
+            print('Loop COUNT: ', countL)
+            countL = countL + 1
+            print('IN THE LOOP')
+            start_date_str = row['start_date']
+            end_date_str = row['end_date']
+            print('START: ', start_date_str)
+            print('END: ', end_date_str)
+                # # Convert string dates to datetime objects
+                # start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                # end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+                # Calculate something using your method
+            result = self.calculate_something(start_date_str, end_date_str, category, crewData)
+            result = json.loads(result)
+                # Add the results to the list
+            category_data_list.append(result)
+        frames = {}
+        for i, Any in enumerate(category_data_list):
+                frames[f'set{i+1}'] = Any
+        print('OUT OF THE LOOP')
+        # Calculate averages for all categories
+
+        # iterating key value pair
+        sumOne = 0
+        sumTwo = 0
+        sumThree = 0
+        sumFour = 0
+        sumFive = 0
+        print('items: ', frames.items())
+        for key in frames.keys():
+            print(key, frames[key])
+            newFrame = frames[key]
+
+            for innerKey in newFrame.keys():
+                print(innerKey, newFrame[innerKey])
+                if innerKey == 'calculated_rate':
+                    sumOne = sumOne + newFrame[innerKey]
+                if innerKey == 'Percent_Difference':
+                    sumTwo = sumTwo + newFrame[innerKey]
+                if innerKey == 'Diff_days':
+                    sumThree = sumThree + newFrame[innerKey]
+                if innerKey == 'Diff_Quantity':
+                    sumFour = sumFour + newFrame[innerKey]
+                if innerKey == 'Resupply_Count':
+                    sumFive = sumFive + newFrame[innerKey]
+        print('sum one : ', sumOne)
+        print('sum two : ', sumTwo)
+        print('sum three : ', sumThree)
+        print('sum four: ', sumFour )
+        print('sum Five: ', sumFive )
+
+        rate_average = sumOne / len(frames)
+        print('average_rate: ', rate_average)
+        diff_average = sumTwo / len(frames)
+        days_average = sumThree / len(frames)
+        quantity_average = sumFour / len(frames)
+        resupply_average = sumFive / len(frames)
+
+
+        # Create a dictionary with the averages
+        averages_dict = {
+            'RATE_AVERAGE': rate_average,
+            'RATE_DIFF_AVERAGE': diff_average,
+            'DAYS_BETWEEN_RESUPPLY_AVERAGE': days_average,
+            'USAGE_AVERAGE': quantity_average,
+            'RESUPPLY_AVERAGE': resupply_average
+        }
+
+        # Convert the dictionary to a JSON string
+        averages_json = json.dumps(averages_dict)
+
+        # Print the JSON string
+        print('PRINTNG THE JSON :', averages_json)
+        return (averages_json)
+    
 
 
     

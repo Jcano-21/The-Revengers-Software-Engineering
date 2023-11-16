@@ -3,13 +3,16 @@ from consumables import Consumables
 import pandas as pd
 import numpy as np
 import json as js
-from calculate_consumption_percent_difference import createRequest
-from flight_plan import getFlights
+from consumables_query import createRequest
+from consumables_query import get_resupply_dates
+from flights_query import getFlights
 from flights import flights
 from waterAndGases import waterAndGases
-from waterAndGas_consumption import getWaterAndGas
+from waterAndGases_query import getWaterAndGas
 from crews import crews
 from crews_query import getCrewCounts
+import sqlalchemy as sa
+import pymysql
 
 app = Flask(__name__)
 
@@ -46,7 +49,7 @@ def consumable():
     if data['category'] != 'RS-Water' and data['category'] != 'US-Water' and data['category'] != 'Gases':
         
         # Create an instance of the Consumables class
-        consumables = Consumables()
+        consumables = Consumables(data['category'])
         results = createRequest(consumables, data)
         rs_consumables = results['df1']
         us_consumables = results['df2']
@@ -102,6 +105,119 @@ def consumable():
             newDataJson = js.dumps(frames)
 
         return jsonify(newDataJson)
+
+@app.route("/consumptionRates")
+def consumptionRates():
+    #request.get_json()  # Extract JSON data from the request
+
+    #flight = flights()
+    #flights_data = getFlights(flight, data)
+    start_date = '2022-01-01'
+    end_date = '2023-09-05'
+    category = 'KTO'
+        
+    data = {}
+
+        
+    data[f'start_date'] = start_date
+    data[f'end_date'] = end_date
+    data[f'category'] = category
+    print(data)
+        
     
+    
+    if data['category'] != 'RS-Water' and data['category'] != 'US-Water' and data['category'] != 'Gases':
+        
+        # Create an instance of the Consumables class
+        consumables = Consumables(data['category'])
+        createRequest(consumables, data)
+        get_resupply_dates(consumables, data)
+        results = consumables.calulateResupply()
+        return jsonify(results)
+    
+
+@app.route("/makePredictions")
+def makePredictions():
+    
+    start_date = '2022-01-01'
+    end_date = '2023-09-05'
+
+    categoryOne = 'ACY Inserts'
+    categoryTwo = 'Filter Inserts'
+    categoryThree = 'Food-RS'
+    categoryFour = 'Food-US'
+    categoryFive = 'KTO'
+    categorySix = 'Pretreat Tanks'
+        
+    dataOne = {}
+    dataTwo = {}
+    dataThree = {}
+    dataFour = {}
+    dataFive = {}
+    dataSix = {}
+
+        
+    dataOne[f'start_date'] = start_date
+    dataOne[f'end_date'] = end_date
+    dataOne[f'category'] = categoryOne
+
+    dataTwo[f'start_date'] = start_date
+    dataTwo[f'end_date'] = end_date
+    dataTwo[f'category'] = categoryTwo
+
+    dataThree[f'start_date'] = start_date
+    dataThree[f'end_date'] = end_date
+    dataThree[f'category'] = categoryThree
+
+    dataFour[f'start_date'] = start_date
+    dataFour[f'end_date'] = end_date
+    dataFour[f'category'] = categoryFour
+
+    dataFive[f'start_date'] = start_date
+    dataFive[f'end_date'] = end_date
+    dataFive[f'category'] = categoryFive
+    
+    dataSix[f'start_date'] = start_date
+    dataSix[f'end_date'] = end_date
+    dataSix[f'category'] = categorySix
+
+    ACY = Consumables(categoryOne)
+    FilterInserts = Consumables(categoryTwo)
+    FoodRS = Consumables(categoryThree)
+    FoodUS = Consumables(categoryFour)
+    KTO = Consumables(categoryFive)
+    PretreatTanks = Consumables(categorySix)
+
+    createRequest(ACY, dataOne)
+    createRequest(FilterInserts, dataTwo)
+    createRequest(FoodRS, dataThree)
+    createRequest(FoodUS, dataFour)
+    createRequest(KTO, dataFive)
+    createRequest(PretreatTanks, dataSix)
+
+    get_resupply_dates(ACY, dataOne)
+    get_resupply_dates(FilterInserts, dataTwo)
+    get_resupply_dates(FoodRS, dataThree)
+    get_resupply_dates(FoodUS, dataFour)
+    get_resupply_dates(KTO, dataFive)
+    get_resupply_dates(PretreatTanks, dataSix)
+
+    resupplyOne = ACY.calulateResupply()
+    resupplyTwo = FilterInserts.calulateResupply()
+    resupplyThree = FoodRS.calulateResupply()
+    resupplyFour = FoodUS.calulateResupply()
+    resupplyFive = KTO.calulateResupply()
+    resupplySix = PretreatTanks.calulateResupply()
+
+    print ('Resupply ACY: ', resupplyOne)
+    print ('Resupply Filter Inserts: ', resupplyTwo)
+    print ('Resupply Food-RS: ', resupplyThree)
+    print ('Resupply Food-US: ', resupplyFour)
+    print ('Resupply KTO: ', resupplyFive)
+    print ('Resupply Pretreat Tanks: ', resupplySix)
+
+
+    return('success!!!!')
+
 if __name__ == "__main__":
     app.run(debug=True)

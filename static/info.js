@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             yaxis: {
                                 title: 'Count',
                             },
-                            margin: { t: 0 },
+                            margin: { t: 20 },
                         };
 
                         Plotly.newPlot('tester', data, layout);
@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             yaxis: {
                                 title: 'Count',
                             },
-                            margin: { t: 0 },
+                            margin: { t: 20 },
                         };
 
                         Plotly.newPlot('tester', data, layout);
@@ -475,7 +475,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     yaxis: {
                                         title: 'Count',
                                     },
-                                    margin: { t: 0 },
+                                    margin: { t: 20 },
                                 };
         
                                 Plotly.newPlot('tester', data, layout);
@@ -612,7 +612,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 yaxis: {
                                     title: 'Count',
                                 },
-                                margin: { t: 0 },
+                                margin: { t: 20 },
                             };
     
                             Plotly.newPlot('tester', data, layout);
@@ -691,7 +691,7 @@ TESTER = document.getElementById('tester');
 Plotly.plot( TESTER, [{
     x: [1, 2, 3, 4, 5],
     y: [1, 2, 4, 8, 16] }], { 
-    margin: { t: 0 } }, {showSendToCloud:true} );
+    margin: { t: 20 } }, {showSendToCloud:true} );
 
 /* Current Plotly.js version */
 console.log( Plotly.BUILD );

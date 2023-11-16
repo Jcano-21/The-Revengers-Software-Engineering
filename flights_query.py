@@ -15,7 +15,7 @@ def getFlights(flights, data):
     connection_url = f"mysql+pymysql://{username}:{password}@localhost/{db_name}"
 
     if data['category'] == 'Gases':
-        columnSelect = 'event = \'EVA\' or (event = \'dock\'  and eva_type = \'resupply\')'
+        columnSelect = 'event = \'dock\''
     else:
         columnSelect = 'event = \'dock\'  and eva_type = \'resupply\''
 
@@ -39,7 +39,7 @@ def getFlights(flights, data):
         ORDER BY
             a.datedim;
         """
-
+    print(query_category)
  #WHERE
   #          a.event = 'Dock'
     # Fetch the data into a DataFrame
