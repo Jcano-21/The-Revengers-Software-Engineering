@@ -62,7 +62,7 @@ def createRequest(consumables, data):
  
     # Fetch the data into a DataFrame
     df_category = pd.read_sql(query_category, engine)
-    consumables.load_category_data(data['category'], df_category)
+    consumables.load_category_data(df_category)
     
     print('Here is the data:', data)
 

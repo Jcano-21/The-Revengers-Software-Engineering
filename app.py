@@ -209,12 +209,42 @@ def makePredictions():
     resupplyFive = KTO.calulateResupply()
     resupplySix = PretreatTanks.calulateResupply()
 
+
     print ('Resupply ACY: ', resupplyOne)
     print ('Resupply Filter Inserts: ', resupplyTwo)
     print ('Resupply Food-RS: ', resupplyThree)
     print ('Resupply Food-US: ', resupplyFour)
     print ('Resupply KTO: ', resupplyFive)
     print ('Resupply Pretreat Tanks: ', resupplySix)
+
+    dfOne = ACY.get_resupply_data()
+    dfTwo = FilterInserts.get_resupply_data()
+    dfThree = FoodRS.get_resupply_data()
+    dfFour = FoodUS.get_resupply_data()
+    dfFive = KTO.get_resupply_data()
+    dfSix = PretreatTanks.get_resupply_data()
+    dfCombinedResupply = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+
+
+    dfOne = ACY.get_category_data()
+    dfTwo = FilterInserts.get_category_data()
+    dfThree = FoodRS.get_category_data()
+    dfFour = FoodUS.get_category_data()
+    dfFive = KTO.get_category_data()
+    dfSix = PretreatTanks.get_category_data()
+
+    dfOne['Category'] = categoryOne
+    dfTwo['Category'] = categoryTwo
+    dfThree['Category'] = categoryThree
+    dfFour['Category'] = categoryFour
+    dfFive['Category'] = categoryFive
+    dfSix['Category'] = categorySix
+
+
+    dfCombined = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+
+    print(dfCombined)
+    print(dfCombinedResupply)
 
 
     return('success!!!!')

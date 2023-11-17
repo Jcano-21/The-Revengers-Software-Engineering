@@ -11,11 +11,115 @@ class Consumables:
         self._US_crew_count = {}  # Private attribute for US crew count
         self._resupply_dates = {}
         self._category = category
+        self._resupply_data = {}
+        
+    def load_category_data(self, df):
+        self._category_data = df
 
+    def load_RS_crew_count(self, df):
+        self._RS_crew_count = df
+
+    def load_US_crew_count(self, df):
+        self._US_crew_count = df
+    
+    def load_resupply_dates(self, df):
+        self._resupply_dates = df
+        
+    def load_resupply_data(self, df):
+        self._resupply_data = df
+        
+
+    def get_consumables_for_date_range(self, start_date, end_date, category):
+        print("Category:", category)
+        print("Date Range - Start Date:", start_date)
+        print("Date Range - End Date:", end_date)
+
+        category_info = None
+
+        # Check if the specified category exists in the category data
+        #if category in self._category_data:
+            # Filter category_info based on category
+        category_info = self._category_data
+
+        # Ensure 'datedim' column is in datetime format
+        category_info['datedim'] = pd.to_datetime(category_info['datedim'])
+
+        # Convert start_date and end_date to datetime format
+        start_date = pd.to_datetime(start_date)
+        end_date = pd.to_datetime(end_date)
+
+        # Filter based on date range
+        category_info = category_info[(category_info['datedim'] >= start_date) & (category_info['datedim'] <= end_date)]
+        rs_consumables = category_info[(category_info['current_ip_owner'] == 'RSA00')] 
+        us_consumables = category_info[(category_info['current_ip_owner'] == 'NASA')]
+        
+        # Assuming df1 and df2 are your two DataFrames
+        # Merge the two DataFrames on 'datedim'
+        merged_df = pd.merge(rs_consumables, us_consumables, on='datedim', suffixes=('_df1', '_df2'))
+
+        # Sum the count columns
+        merged_df['nasa_count'] = merged_df['nasa_count_df1'] + merged_df['nasa_count_df2']
+        merged_df['rsa00_count'] = merged_df['rsa00_count_df1'] + merged_df['rsa00_count_df2']
+        merged_df['distinct_id_count_categories'] = merged_df['distinct_id_count_categories_df1'] + merged_df['distinct_id_count_categories_df2']
+        merged_df['discard_count'] = merged_df['discard_count_df1'] + merged_df['discard_count_df2']
+        merged_df['distinct_discard_difference'] = merged_df['distinct_discard_difference_df1'] + merged_df['distinct_discard_difference_df2']
+
+        # Select only the relevant columns
+        result_df = merged_df[['datedim', 'distinct_id_count_categories', 'discard_count', 'distinct_discard_difference']]
+
+        print("MERGED DATAFRAME: ", result_df)
+
+            # Add corresponding columns from df2 to the new DataFrame
+        print("Category Info:") 
+        print(category_info)
+
+        print("RS CONSUMABLES: ", rs_consumables)
+        print("US CONSUMBABLES: ", us_consumables)
+        print("MERGED DATAFRAME: ", result_df)
+
+        return rs_consumables, us_consumables, result_df
+
+    def get_Ccount_for_date_range(self, start_date, end_date):
+        print("Date Range - Start Date:", start_date)
+        print("Date Range - End Date:", end_date)
+
+        RS_crew_info = None
+        US_crew_info = None
+
+        # Convert start_date and end_date to datetime format
+        start_date = pd.to_datetime(start_date)
+        end_date = pd.to_datetime(end_date)
+
+        if self._RS_crew_count is not None:
+            RS_crew_info = self._RS_crew_count
+
+            # Ensure 'datedim' column is in datetime format
+            RS_crew_info['datedim'] = pd.to_datetime(RS_crew_info['datedim'])
+
+            # Filter based on date range
+            RS_crew_info = RS_crew_info[(RS_crew_info['datedim'] >= start_date) & (RS_crew_info['datedim'] <= end_date)]
+
+        if self._US_crew_count is not None:
+            US_crew_info = self._US_crew_count
+
+            # Ensure 'datedim' column is in datetime format
+            US_crew_info['datedim'] = pd.to_datetime(US_crew_info['datedim'])
+
+            # Filter based on date range
+            US_crew_info = US_crew_info[(US_crew_info['datedim'] >= start_date) & (US_crew_info['datedim'] <= end_date)]
+
+        print("RS Crew Information:")
+        print(RS_crew_info)
+
+        print("US Crew Information:")
+        print(US_crew_info)
+
+        return RS_crew_info, US_crew_info
+    
     def calculate_something(self, start_date, end_date, category, crewData):
         # A private method for data calculation
         # Filter category_info based on category
-            category_info = self._category_data[category]
+            category_info = self._category_data
             print('start date: ', category_info)
 
 
@@ -102,107 +206,7 @@ class Consumables:
             print('percent difference json: ', json_consumption_data)
             return json_consumption_data 
 
-    def load_category_data(self, category, df):
-        self._category_data[category] = df
 
-    def load_RS_crew_count(self, df):
-        self._RS_crew_count = df
-
-    def load_US_crew_count(self, df):
-        self._US_crew_count = df
-    
-    def load_resupply_dates(self, df):
-        self._resupply_dates = df
-        
-        
-
-    def get_consumables_for_date_range(self, start_date, end_date, category):
-        print("Category:", category)
-        print("Date Range - Start Date:", start_date)
-        print("Date Range - End Date:", end_date)
-
-        category_info = None
-
-        # Check if the specified category exists in the category data
-        if category in self._category_data:
-            # Filter category_info based on category
-            category_info = self._category_data[category]
-
-            # Ensure 'datedim' column is in datetime format
-            category_info['datedim'] = pd.to_datetime(category_info['datedim'])
-
-            # Convert start_date and end_date to datetime format
-            start_date = pd.to_datetime(start_date)
-            end_date = pd.to_datetime(end_date)
-
-            # Filter based on date range
-            category_info = category_info[(category_info['datedim'] >= start_date) & (category_info['datedim'] <= end_date)]
-            rs_consumables = category_info[(category_info['current_ip_owner'] == 'RSA00')] 
-            us_consumables = category_info[(category_info['current_ip_owner'] == 'NASA')]
-        
-        # Assuming df1 and df2 are your two DataFrames
-        # Merge the two DataFrames on 'datedim'
-        merged_df = pd.merge(rs_consumables, us_consumables, on='datedim', suffixes=('_df1', '_df2'))
-
-        # Sum the count columns
-        merged_df['nasa_count'] = merged_df['nasa_count_df1'] + merged_df['nasa_count_df2']
-        merged_df['rsa00_count'] = merged_df['rsa00_count_df1'] + merged_df['rsa00_count_df2']
-        merged_df['distinct_id_count_categories'] = merged_df['distinct_id_count_categories_df1'] + merged_df['distinct_id_count_categories_df2']
-        merged_df['discard_count'] = merged_df['discard_count_df1'] + merged_df['discard_count_df2']
-        merged_df['distinct_discard_difference'] = merged_df['distinct_discard_difference_df1'] + merged_df['distinct_discard_difference_df2']
-
-        # Select only the relevant columns
-        result_df = merged_df[['datedim', 'distinct_id_count_categories', 'discard_count', 'distinct_discard_difference']]
-
-        print("MERGED DATAFRAME: ", result_df)
-
-            # Add corresponding columns from df2 to the new DataFrame
-        print("Category Info:") 
-        print(category_info)
-
-        print("RS CONSUMABLES: ", rs_consumables)
-        print("US CONSUMBABLES: ", us_consumables)
-        print("MERGED DATAFRAME: ", result_df)
-
-        return rs_consumables, us_consumables, result_df
-
-    def get_Ccount_for_date_range(self, start_date, end_date):
-        print("Date Range - Start Date:", start_date)
-        print("Date Range - End Date:", end_date)
-
-        RS_crew_info = None
-        US_crew_info = None
-
-        # Convert start_date and end_date to datetime format
-        start_date = pd.to_datetime(start_date)
-        end_date = pd.to_datetime(end_date)
-
-        if self._RS_crew_count is not None:
-            RS_crew_info = self._RS_crew_count
-
-            # Ensure 'datedim' column is in datetime format
-            RS_crew_info['datedim'] = pd.to_datetime(RS_crew_info['datedim'])
-
-            # Filter based on date range
-            RS_crew_info = RS_crew_info[(RS_crew_info['datedim'] >= start_date) & (RS_crew_info['datedim'] <= end_date)]
-
-        if self._US_crew_count is not None:
-            US_crew_info = self._US_crew_count
-
-            # Ensure 'datedim' column is in datetime format
-            US_crew_info['datedim'] = pd.to_datetime(US_crew_info['datedim'])
-
-            # Filter based on date range
-            US_crew_info = US_crew_info[(US_crew_info['datedim'] >= start_date) & (US_crew_info['datedim'] <= end_date)]
-
-        print("RS Crew Information:")
-        print(RS_crew_info)
-
-        print("US Crew Information:")
-        print(US_crew_info)
-
-        return RS_crew_info, US_crew_info
-    
     def calulateResupply(self):
         crewData = ''
         category = self._category
@@ -272,20 +276,33 @@ class Consumables:
 
         # Create a dictionary with the averages
         averages_dict = {
+            'Category': self._category,
             'RATE_AVERAGE': rate_average,
             'RATE_DIFF_AVERAGE': diff_average,
             'DAYS_BETWEEN_RESUPPLY_AVERAGE': days_average,
             'USAGE_AVERAGE': quantity_average,
             'RESUPPLY_AVERAGE': resupply_average
         }
-
         # Convert the dictionary to a JSON string
         averages_json = json.dumps(averages_dict)
-
+        
+        index = [0]
+        
+        df = pd.DataFrame(averages_dict, index=index)
+        self.load_resupply_data(df)
         # Print the JSON string
-        print('PRINTNG THE JSON :', averages_json)
+        print(df)
         return (averages_json)
     
 
-
+    def get_category_data(self):
+        df = self._category_data
+        return(df)
     
+    def get_resupply_dates(self):
+        df = self._resupply_dates
+        return(df)
+    
+    def get_resupply_data(self):
+        df = self._resupply_data
+        return(df)
