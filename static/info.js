@@ -14,6 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Select the "Submit" button
     const submitButton = document.getElementById("submitDates");
 
+    // Select Info Screen buttons
+    const consumptionButton = document.getElementById("consumption");
+    const percentDiffButton = document.getElementById("percent_diff");
+
     // Select the choices by their IDs
     const acyChoice = document.getElementById("acyInserts");
     const filterChoice = document.getElementById("filterInserts");
