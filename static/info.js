@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
     // Select the button element by its ID
-    const itemRate = document.getElementById("top");
+    const itemRate = document.getElementById("calc_data");
     const itemSelectionButton = document.getElementById("itemSelection");
 
      // Select the input elements by their IDs
@@ -13,6 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Select the "Submit" button
     const submitButton = document.getElementById("submitDates");
+
+    // Select Info Screen buttons
+    const consumptionButton = document.getElementById("consumption");
+    const percentDiffButton = document.getElementById("percent_diff");
 
     // Select the choices by their IDs
     const acyChoice = document.getElementById("acyInserts");
@@ -79,14 +83,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.log('DF3: ', df3Data);
                         console.log('DF4: ', df4Data);
 
-                        if (dataCheck !== 'Food'){
-                        //Fill Warning box with assume rate, calculated rate, and percent difference
-                        itemRate.textContent = 'A_Rate: ' + df5Data.rate.toFixed(4) + ' C_Rate: ' + df5Data.calculated_rate.toFixed(4) + ' P_Diff: '  + df5Data.Percent_Difference.toFixed(3);
-                        }
-                        else {
-                            itemRate.textContent = 'Rate not yet calculated.'
+                         if (dataCheck !== 'Food'){
+                         //Fill Warning box with assume rate, calculated rate, and percent difference
+                         itemRate.textContent = 'A_Rate: ' + df5Data.rate.toFixed(4) + ' C_Rate: ' + df5Data.calculated_rate.toFixed(4) + ' P_Diff: '  + df5Data.Percent_Difference.toFixed(3);
+                         }
+                         else {
+                             itemRate.textContent = 'Rate not yet calculated.'
 
-                        }
+                         }
                         // Extract data for plotting
                         const dates = df1Data.data.map(entry => entry.datedim.split('T')[0]);
                         const datesCrewUS = df2Data.data.map(entry => entry.datedim.split('T')[0]);
@@ -626,7 +630,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fetchDataAndCreatePlot(data);
     }
-
+    
+    
     
     // Function to change the text
     function changeText(choice) {
