@@ -13,6 +13,8 @@ from crews import crews
 from crews_query import getCrewCounts
 import sqlalchemy as sa
 import pymysql
+from modal import request_modal_update
+from linearReg import request_modal_LR_update
 
 app = Flask(__name__)
 
@@ -106,15 +108,15 @@ def consumable():
 
         return jsonify(newDataJson)
 
-@app.route("/consumptionRates")
+@app.route("/consumptionRates", methods=['POST'])
 def consumptionRates():
-    #request.get_json()  # Extract JSON data from the request
+    category_data = request.get_json()  # Extract JSON data from the request
 
     #flight = flights()
     #flights_data = getFlights(flight, data)
     start_date = '2022-01-01'
     end_date = '2023-09-05'
-    category = 'KTO'
+    category = category_data
         
     data = {}
 
@@ -134,6 +136,9 @@ def consumptionRates():
         get_resupply_dates(consumables, data)
         results = consumables.calulateResupply()
         return jsonify(results)
+
+        
+        
     
 
 @app.route("/makePredictions")
@@ -223,15 +228,14 @@ def makePredictions():
     dfFour = FoodUS.get_resupply_data()
     dfFive = KTO.get_resupply_data()
     dfSix = PretreatTanks.get_resupply_data()
-    dfCombinedResupply = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+    df_resupply_quantities = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
-
-    dfOne = ACY.get_category_data()
-    dfTwo = FilterInserts.get_category_data()
-    dfThree = FoodRS.get_category_data()
-    dfFour = FoodUS.get_category_data()
-    dfFive = KTO.get_category_data()
-    dfSix = PretreatTanks.get_category_data()
+    rsOne, usOne, dfOne = ACY.get_consumables_for_date_range(dataOne['start_date'], dataOne['end_date'], dataOne['category'])
+    rsTwo, usTwo, dfTwo = FilterInserts.get_consumables_for_date_range(dataTwo['start_date'], dataTwo['end_date'], dataTwo['category'])
+    rsThree, usThree, dfThree = FoodRS.get_consumables_for_date_range(dataThree['start_date'], dataThree['end_date'], dataThree['category'])
+    rsFour, usFour, dfFour = FoodUS.get_consumables_for_date_range(dataFour['start_date'], dataFour['end_date'], dataFour['category'])
+    rsFive, usFive, dfFive = KTO.get_consumables_for_date_range(dataFive['start_date'], dataFive['end_date'], dataFive['category'])
+    rsSix, usSix, dfSix = PretreatTanks.get_consumables_for_date_range(dataSix['start_date'], dataSix['end_date'], dataSix['category'])
 
     dfOne['Category'] = categoryOne
     dfTwo['Category'] = categoryTwo
@@ -241,11 +245,29 @@ def makePredictions():
     dfSix['Category'] = categorySix
 
 
-    dfCombined = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+    df_Inventory = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
-    print(dfCombined)
-    print(dfCombinedResupply)
+    print(df_Inventory)
 
+    start_date = '2022-01-01'
+    end_date_Flights = '2025-12-22'
+
+    categoryFlights = 'ACY Inserts'
+        
+    dataFlights = {}
+
+    dataFlights[f'start_date'] = start_date
+    dataFlights[f'end_date'] = end_date_Flights
+    dataFlights[f'category'] = categoryFlights
+
+    flight = flights()
+    getFlights(flight, dataFlights)
+    df_flight_plan = flight.get_flights_for_date_range(dataFlights['start_date'], dataFlights['end_date'])
+
+
+    request_modal_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+    #request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+    print(df_resupply_quantities)
 
     return('success!!!!')
 

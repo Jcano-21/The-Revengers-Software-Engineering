@@ -631,6 +631,91 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchDataAndCreatePlot(data);
     }
     
+    function captureInputValuesCalc() {
+            const categoryValue = itemSelectionButton.textContent;
+
+            // Define the data to send in the request
+            const data = categoryValue;
+
+            function fetchDataAndCreatePlot(data) {
+                fetch('/consumptionRates', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    // credentials: 'include',  // Include credentials if needed
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        // Parse the JSON response to an object
+                        result = JSON.parse(result);
+
+                        console.log('Print results: ', result);
+                        dataCheck = data.category;
+                        if ((data.category !== 'US-Water') && (data.category !== 'RS-Water') && (data.category !== 'Gases') ) {
+                            const df1Data = result.Category;
+                            const df2Data = result.RATE_AVERAGE;
+                            const df3Data = result.RATE_DIFF_AVERAGE;
+                            const df4Data = result.DAYS_BETWEEN_RESUPPLY_AVERAGE;
+                            const df5Data = result.USAGE_AVERAGE
+                            const df6Data = result.RESUPPLY_AVERAGE
+                            console.log('DF1: ', df1Data);
+                            console.log('DF2: ', df2Data);
+                            console.log('DF3: ', df3Data);
+                            console.log('DF4: ', df4Data);
+
+                            if (dataCheck !== 'Food'){
+                            //Fill Warning box with assume rate, calculated rate, and percent difference
+                            itemRate.textContent = 'Category: ' + df1Data + ' Rate_Average: ' + df2Data + ' Rate_Diff: ' + df3Data + ' DBR: '  + df4Data + ' Usage_Avg: ' + df5Data + ' Ressuply_Avg: ' + df6Data;
+                            }
+                            else {
+                                itemRate.textContent = 'Rate not yet calculated.'
+
+                            }
+                        
+
+                            
+                        }
+                    else {
+                        //pars the json strings for water data
+                        const df1Data = JSON.parse(result.df1);
+                        const df2Data = JSON.parse(result.df2);
+                        const df3Data = JSON.parse(result.df3);
+                        const df4Data = JSON.parse(result.df4);
+                        //If category is US-Water or RS-Water fill in text box with rate usage data
+                        if ((data.category === 'US-Water' || data.category === 'RS-Water')) {
+                            const df5Data = JSON.parse(result.df5);
+                            itemRate.textContent = 'A_Rate: ' + df5Data.rate.toFixed(4) + ' C_Rate: ' + df5Data.calculated_rate.toFixed(4) + ' P_Diff: '  + df5Data.Percent_Difference.toFixed(3) 
+                            + '\n\n' + 'A_RateTech: ' + df5Data.rateTech.toFixed(4) + ' C_RateTech: ' + df5Data.calculated_rate_tech.toFixed(4) + ' P_Diff: '  + df5Data.Percent_DifferenceTech.toFixed(3) ;
+                            console.log('DF5: ', df5Data);
+                        }
+
+
+                        console.log('DF1: ', df1Data);
+                        console.log('DF2: ', df2Data);
+                        console.log('DF3: ', df3Data);
+                        console.log('DF4: ', df4Data);
+
+                        
+                        
+                        // Extract data for plotting
+                        const flightsCount = Object.keys(datesFlights).length;
+                        console.log('flight count: ', flightsCount)
+                        console.log('EventType: ', eventType)  
+                        
+                        
+                    
+                    }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            fetchDataAndCreatePlot(data)
+
+        }
     
     
     // Function to change the text
@@ -686,6 +771,17 @@ document.addEventListener("DOMContentLoaded", function () {
     submitButton.addEventListener("click", function (event) {
         event.preventDefault(); // Prevent the default form submission
         captureInputValues();
+    });
+
+    // Add a click event listener to the "Submit" button
+    consumptionButton.addEventListener("click", function (event) {
+        
+        if (itemSelectionButton.textContent !== 'Select Item'){ // Prevent the default form submission
+        captureInputValuesCalc();
+        }
+        else {
+            window.alert("Please select an Item")
+        }
     });
 });
 

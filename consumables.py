@@ -189,7 +189,13 @@ class Consumables:
 
             difference_in_days = (end_date_consumption.datedim.iloc[1]) - (start_date_consumption.datedim.iloc[0])
             print('Difference in Days: ', (end_date_consumption.datedim.iloc[1]), ' : ', (start_date_consumption.datedim.iloc[0]), ' : ', difference_in_days.days, ' Days')
-            calculated_consumption = ((difference_consumption / difference_in_days.days) / 7)
+            if category == 'Food-RS':
+                calculated_consumption = ((difference_consumption / difference_in_days.days) / 3)
+            elif category == 'Food-US':
+                calculated_consumption = ((difference_consumption / difference_in_days.days) / 4)
+            else:
+                calculated_consumption = ((difference_consumption / difference_in_days.days) / 7)
+
             print('Calculated Consumption Rate: ', calculated_consumption)
             print('Here is the current Rate: ', rates)
 
