@@ -72,6 +72,7 @@ body{
 .calculations{
     width: 98.5%;
     height: 125;
+    overflow: auto;
     background-color: #DFE6E9;
     margin-bottom: 15px;
     margin-top: 15px;

@@ -26,19 +26,16 @@ class waterAndGases:
             # Filter based on date range
             newStart = USWater_info.datedim.iloc[0]
             start_date_consumption = USWater_info[(USWater_info['datedim'] == start_date)]
-            print('debug print BEFORE IF: ', start_date_consumption)
+
             if start_date_consumption.empty:
                 start_date_consumption = USWater_info[(USWater_info['datedim'] == newStart)]
 
-            print('debug print: ', start_date_consumption)
             end_date_consumption = USWater_info[(USWater_info['datedim'] == end_date)]
-            print('debut PRINT BEFORE IF: ', end_date_consumption)
             if end_date_consumption.empty:
                 end_date_consumption = USWater_info[(USWater_info['datedim'] == USWater_info.datedim.iloc[-1])]
-            print('debut PRINT: ', end_date_consumption)
             difference_consumption = start_date_consumption.corrected_potableL.iloc[0]  - end_date_consumption.corrected_potableL.iloc[-1]
             difference_consumption_technical = start_date_consumption.corrected_technicalL.iloc[0]  - end_date_consumption.corrected_technicalL.iloc[-1]
-            print('DATES !!!!!!!!!!!!!!', start_date_consumption, end_date_consumption)
+            print('DATES:', start_date_consumption, end_date_consumption)
             print('DIFFERENCE between dates: ', difference_consumption)
             ratesPot = 2.844
             ratesTech = 11.5
@@ -65,7 +62,6 @@ class waterAndGases:
             return json_consumption_data 
 
     def calculate_RS_water(self, start_date, end_date):
-        # A private method for data calculation
         # Filter category_info based on category
             RSWater_info = self._RSWater_data
             print('start date: ', RSWater_info)
@@ -81,19 +77,16 @@ class waterAndGases:
             # Filter based on date range
             newStart = RSWater_info.datedim.iloc[0]
             start_date_consumption = RSWater_info[(RSWater_info['datedim'] == start_date)]
-            print('debug print BEFORE IF: ', start_date_consumption)
+
             if start_date_consumption.empty:
                 start_date_consumption = RSWater_info[(RSWater_info['datedim'] == newStart)]
 
-            print('debug print: ', start_date_consumption)
             end_date_consumption = RSWater_info[(RSWater_info['datedim'] == end_date)]
-            print('debut PRINT BEFORE IF: ', end_date_consumption)
             if end_date_consumption.empty:
                 end_date_consumption = RSWater_info[(RSWater_info['datedim'] == RSWater_info.datedim.iloc[-1])]
-            print('debut PRINT: ', end_date_consumption)
             difference_consumption = start_date_consumption.remaining_potableL.iloc[0]  - end_date_consumption.remaining_potableL.iloc[-1]
             difference_consumption_technical = start_date_consumption.technicalL.iloc[0]  - end_date_consumption.technicalL.iloc[-1]
-            print('DATES !!!!!!!!!!!!!!', start_date_consumption, end_date_consumption)
+            print('DATES: ', start_date_consumption, end_date_consumption)
             print('DIFFERENCE between dates: ', difference_consumption)
             ratesPot = 2.5
             ratesTech = 11.5
@@ -137,8 +130,6 @@ class waterAndGases:
 
         RSWater_info = None
 
-        # Check if the specified category exists in the category data
-        
         # Store RSWater_data
         RSWater_info = self._RSWater_data
 
@@ -163,8 +154,6 @@ class waterAndGases:
         print("Date Range - End Date:", end_date)
 
         USWater_info = None
-
-        # Check if the specified category exists in the category data
         
         # Store USWater_data
         USWater_info = self._USWater_data

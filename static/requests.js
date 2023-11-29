@@ -593,26 +593,29 @@ function captureInputValuesCalc(categoryValue, itemRate) {
             },
             method: 'POST',
             body: JSON.stringify(data),
-            // credentials: 'include',  // Include credentials if needed
         })
             .then(response => response.json())
             .then(result => {
                 // Parse the JSON response to an object
-                result = JSON.parse(result);
-
-                console.log('Print results: ', result);
+                console.log('print first results: ', result)
+                averages = JSON.parse(result[0]);
+                resupply_periods = JSON.parse(result[1]);
+                resupply_Dates = JSON.parse(result[2]);
+                console.log('Print results: ', averages);
                 dataCheck = data.category;
                 if ((data.category !== 'US-Water') && (data.category !== 'RS-Water') && (data.category !== 'Gases') ) {
-                    const df1Data = result.Category;
-                    const df2Data = result.RATE_AVERAGE;
-                    const df3Data = result.RATE_DIFF_AVERAGE;
-                    const df4Data = result.DAYS_BETWEEN_RESUPPLY_AVERAGE;
-                    const df5Data = result.USAGE_AVERAGE
-                    const df6Data = result.RESUPPLY_AVERAGE
+                    const df1Data = averages.Category;
+                    const df2Data = averages.RATE_AVERAGE;
+                    const df3Data = averages.RATE_DIFF_AVERAGE;
+                    const df4Data = averages.DAYS_BETWEEN_RESUPPLY_AVERAGE;
+                    const df5Data = averages.USAGE_AVERAGE
+                    const df6Data = averages.RESUPPLY_AVERAGE
                     console.log('DF1: ', df1Data);
                     console.log('DF2: ', df2Data);
                     console.log('DF3: ', df3Data);
                     console.log('DF4: ', df4Data);
+                    console.log('print periods: ', resupply_periods)
+                    console.log('print dates: ', resupply_Dates)
 
                     if (dataCheck !== 'Food'){
                     //Fill Warning box with assume rate, calculated rate, and percent difference
@@ -622,7 +625,69 @@ function captureInputValuesCalc(categoryValue, itemRate) {
                         itemRate.textContent = 'Rate not yet calculated.'
 
                     }
-                
+
+                    const c_rate = resupply_periods.data.map(entry => entry.calculated_rate);
+                    const a_rate = resupply_periods.data.map(entry => entry.rate);
+                    const p_diff = resupply_periods.data.map(entry => entry.Percent_Difference);
+                    const d_diff = resupply_periods.data.map(entry => entry.Diff_days);
+                    const q_diff = resupply_periods.data.map(entry => entry.Diff_Quantity);
+                    const r_count = resupply_periods.data.map(entry => entry.Resupply_Count);
+                    const dates = resupply_periods.data.map(entry => entry.date.split('T')[0]);
+                    const data = [
+                        {
+                            x: dates,
+                            y: c_rate,
+                            type: 'scatter',
+                            name: 'Calculated_Rate',
+                        },
+
+                        {
+                            x: dates,
+                            y: a_rate,
+                            type: 'scatter',
+                            name: 'Assumed_Rate',
+                        },
+
+                        {
+                            x: dates,
+                            y: p_diff,
+                            type: 'scatter',
+                            name: 'Percent_Difference',
+                        },
+                        
+                        {
+                            x: dates,
+                            y: d_diff,
+                            type: 'scatter',
+                            name: 'Day\'s since resupply',
+                        },
+
+                        {
+                            x: dates,
+                            y: q_diff,
+                            type: 'scatter',
+                            name: 'Quantity since resupply',
+                        },
+
+                        {
+                            x: dates,
+                            y: r_count,
+                            type: 'scatter',
+                            name: 'Last Resupply Amount',
+                        },
+                    ]
+
+                    const layout = {
+                        xaxis: {
+                            title: 'Date',
+                        },
+                        yaxis: {
+                            title: 'Count',
+                        },
+                        margin: { t: 20 },
+                    };
+
+                    Plotly.newPlot('tester', data, layout);
 
                     
                 }

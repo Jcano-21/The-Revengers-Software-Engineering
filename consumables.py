@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import numpy as np 
 import datetime
+from datetime import timedelta
+
 
 
 class Consumables:
@@ -12,6 +14,7 @@ class Consumables:
         self._resupply_dates = {}
         self._category = category
         self._resupply_data = {}
+        self.flights = {}
         
     def load_category_data(self, df):
         self._category_data = df
@@ -27,6 +30,9 @@ class Consumables:
         
     def load_resupply_data(self, df):
         self._resupply_data = df
+
+    def load_flights_data(self, df):
+        self.flights = df
         
 
     def get_consumables_for_date_range(self, start_date, end_date, category):
@@ -53,7 +59,6 @@ class Consumables:
         rs_consumables = category_info[(category_info['current_ip_owner'] == 'RSA00')] 
         us_consumables = category_info[(category_info['current_ip_owner'] == 'NASA')]
         
-        # Assuming df1 and df2 are your two DataFrames
         # Merge the two DataFrames on 'datedim'
         merged_df = pd.merge(rs_consumables, us_consumables, on='datedim', suffixes=('_df1', '_df2'))
 
@@ -69,7 +74,6 @@ class Consumables:
 
         print("MERGED DATAFRAME: ", result_df)
 
-            # Add corresponding columns from df2 to the new DataFrame
         print("Category Info:") 
         print(category_info)
 
@@ -116,7 +120,7 @@ class Consumables:
 
         return RS_crew_info, US_crew_info
     
-    def calculate_something(self, start_date, end_date, category, crewData):
+    def calculate_something(self, start_date_, end_date, category, crewData):
         # A private method for data calculation
         # Filter category_info based on category
             category_info = self._category_data
@@ -127,7 +131,7 @@ class Consumables:
             category_info['datedim'] = pd.to_datetime(category_info['datedim'])
 
             # Convert start_date and end_date to datetime format
-            start_date = pd.to_datetime(start_date)
+            start_date = pd.to_datetime(start_date_)
             end_date = pd.to_datetime(end_date)
             resupply_quantity_date = end_date + pd.DateOffset(days=1)
             print('Resupply Date: !!!!!', resupply_quantity_date, 'previous day: ', end_date)
@@ -192,7 +196,7 @@ class Consumables:
             if category == 'Food-RS':
                 calculated_consumption = ((difference_consumption / difference_in_days.days) / 3)
             elif category == 'Food-US':
-                calculated_consumption = ((difference_consumption / difference_in_days.days) / 4)
+                calculated_consumption = ((difference_consumption / difference_in_days.days) / 7)
             else:
                 calculated_consumption = ((difference_consumption / difference_in_days.days) / 7)
 
@@ -203,44 +207,61 @@ class Consumables:
             print('PERCENT DIFFERENCE IN RATES: ', percent_difference)
             
             
-
+            print('date fordebug: ', start_date_)
+            date_string = str(end_date)
             if not resupply_quantity.empty:
-                consumption_data = {'rate': rates, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference, 'Diff_days': difference_in_days.days, 'Diff_Quantity':int(difference_consumption), 'Resupply_Count': int(resupply_diff) }
+                consumption_data = {'date': date_string,'rate': rates, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference, 'Diff_days': difference_in_days.days, 'Diff_Quantity':int(difference_consumption), 'Resupply_Count': int(resupply_diff) }
             else:
-                consumption_data = {'rate': rates, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference, 'Diff_days': difference_in_days.days, 'Diff_Quantity':int(difference_consumption)}
+                consumption_data = {'date': date_string ,'rate': rates, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference, 'Diff_days': difference_in_days.days, 'Diff_Quantity':int(difference_consumption)}
             json_consumption_data = json.dumps(consumption_data)
             print('percent difference json: ', json_consumption_data)
             return json_consumption_data 
 
 
-    def calulateResupply(self):
+    def calulateResupply(self, resupply_dates):
         crewData = ''
         category = self._category
+        resupply_dates = pd.DataFrame(resupply_dates)
+        resupply_dates.columns = ['datedim'] + list(resupply_dates.columns[1:])
+        print('printing resupply!: ', resupply_dates)
+
+        resupply_dates['New_Column'] = range(len(resupply_dates))
+        resupply_dates.set_index('New_Column', inplace=False)
+        print(resupply_dates.info)
+
+
+        print('printing resupply!: ', resupply_dates)
         category_data = self._resupply_dates
         category_data_list = []
         countL = 0
-        for index, row in category_data.iterrows(): 
+        for index, row in resupply_dates.iterrows(): 
                 
             print('Loop COUNT: ', countL)
             countL = countL + 1
             print('IN THE LOOP')
-            start_date_str = row['start_date']
-            end_date_str = row['end_date']
-            print('START: ', start_date_str)
-            print('END: ', end_date_str)
+            if len(resupply_dates) > index + 1:
+                start_date_str = row['datedim']
+                end_date_str = resupply_dates['datedim'][index + 1]
+                print('START: ', start_date_str)
+                print('END: ', end_date_str)
+            else:
+                break;
                 # # Convert string dates to datetime objects
                 # start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
                 # end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
 
                 # Calculate something using your method
             result = self.calculate_something(start_date_str, end_date_str, category, crewData)
-            result = json.loads(result)
+            result_json = json.loads(result)
                 # Add the results to the list
-            category_data_list.append(result)
+            category_data_list.append(result_json)
+
+        print("category data list: ", category_data_list)
         frames = {}
         for i, Any in enumerate(category_data_list):
-                frames[f'set{i+1}'] = Any
+                frames[i] = Any
         print('OUT OF THE LOOP')
+                
         # Calculate averages for all categories
 
         # iterating key value pair
@@ -298,7 +319,11 @@ class Consumables:
         self.load_resupply_data(df)
         # Print the JSON string
         print(df)
-        return (averages_json)
+    
+        newDF = pd.DataFrame(category_data_list)
+        print('new df :', newDF)
+        dfList_json = newDF.to_json(orient='table')
+        return averages_json, dfList_json
     
 
     def get_category_data(self):
@@ -312,3 +337,53 @@ class Consumables:
     def get_resupply_data(self):
         df = self._resupply_data
         return(df)
+    
+    def find_resupply_dates(self, df):
+        
+        #capture first date from from inventory dataframe
+        startDate = df['datedim'][0]
+        #get resupply vehicle dock dates
+        flights = self.flights
+        #Create list starting with first date
+        dateList = [startDate]
+        print('flights :', flights)
+        #loop through inventory dataframe and flight data frame and compare dates
+        for i, row in df.iterrows():
+            resupply = ''
+            #Check for date that has an increase in quantity
+            if row['distinct_id_count_categories'] < (df['distinct_id_count_categories'][i + 1]):
+                #loop through flight dates
+                for j, flight_row in flights.iterrows():
+                    category_date = row['datedim']
+
+                    print('debug print: ', category_date)
+                    flight_date = flight_row['datedim']
+                    #get difference in days of flight date and inventory date
+                    difference_in_days = (flight_date) - (category_date)
+
+                    # see if flight is within 7 days of increase                  
+                    if difference_in_days.days <= 7 and difference_in_days.days >= -7:
+                        print('flight: ', flight_date)
+                        print(row['datedim'])   
+                        print(df['datedim'][i + 1])
+                        print(row['distinct_id_count_categories'])
+                        print(df['distinct_id_count_categories'][i + 1])
+                        print('difference in days: ', difference_in_days.days)
+                        #set resupply as new date
+                        resupply = row['datedim']
+                        print('resupply date: ', resupply)
+                        #creat dummy list and add resupply
+                        dummyList = [resupply]
+                        break;
+            print('length: ', len(df), 'iteration: ', i + 1)
+            #Check if resupply is empty
+            if resupply != '' :
+                #add dummy list to date list
+                dateList = dateList + dummyList
+            if (len(df) - 1) > i + 1:
+                continue;
+            else : 
+                break;
+        #print(resupply)
+        print(dateList)
+        return (dateList)

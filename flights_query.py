@@ -35,7 +35,6 @@ def getFlights(flights, data):
             iss_flight_plan a
         WHERE
             {columnSelect}
-            AND a.datedim BETWEEN '{data['start_date']}' AND '{data['end_date']}'
         ORDER BY
             a.datedim;
         """

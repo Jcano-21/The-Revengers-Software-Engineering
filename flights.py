@@ -12,6 +12,9 @@ class flights:
     def load_flights_data(self, df):
         self._flights_data = df
 
+    def get_flight_data(self):
+        df = self._flights_data
+        return df
 
     def get_flights_for_date_range(self, start_date, end_date):
         print("Date Range - Start Date:", start_date)

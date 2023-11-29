@@ -129,13 +129,26 @@ def consumptionRates():
     
     
     if data['category'] != 'RS-Water' and data['category'] != 'US-Water' and data['category'] != 'Gases':
-        
+        flight = flights()
+        flights_data = getFlights(flight, data)
+        flightPlan = flight.get_flight_data()
         # Create an instance of the Consumables class
         consumables = Consumables(data['category'])
+        consumables.load_flights_data(flightPlan)
         createRequest(consumables, data)
         get_resupply_dates(consumables, data)
-        results = consumables.calulateResupply()
-        return jsonify(results)
+        
+        trashOne, trashTwo, countData = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
+
+        resupply_dates = consumables.find_resupply_dates(countData)
+        results, periods = consumables.calulateResupply(resupply_dates)
+        resupply = consumables.get_resupply_dates()
+        newDataJson = resupply.to_json()
+        print('periods: ', periods)
+        print('Resupply: ', newDataJson)
+           
+        print(flightPlan)
+        return jsonify(results, periods, newDataJson)
 
         
         
