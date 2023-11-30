@@ -7,6 +7,7 @@ const makePredictionsButton = document.getElementById("percent_diff");
 
 // selecting loading div
 const loader = document.querySelector("#loading");
+const loadertwo = document.querySelector("#loadingtwo");
 
 // showing loading
 function displayLoading() {
@@ -15,11 +16,18 @@ function displayLoading() {
     setTimeout(() => {
         loader.classList.remove("display");
     }, 3000000);
+
+    loadertwo.classList.add("displaytwo");
+    // to stop loading after some time
+    setTimeout(() => {
+        loadertwo.classList.remove("displaytwo");
+    }, 3000000);
 }
 
 // hiding loading 
 function hideLoading() {
     loader.classList.remove("display");
+    loadertwo.classList.remove("displaytwo");
 }
 
 function captureInputValues(data, itemRate, div) {

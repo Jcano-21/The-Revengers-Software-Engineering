@@ -212,7 +212,7 @@ body{
     width: 40rem;
     height: 40rem;
     border: 30px solid #403e3e;
-    border-top: 20px solid #9c41f2;
+    border-top: 30px solid #9c41f2;
     border-radius: 100%;
     margin: auto;
     visibility: hidden;
@@ -222,6 +222,22 @@ body{
     left: 450px;
     z-index: 1; 
 }
+
+#loadingtwo {
+    width: 20rem;
+    height: 20rem;
+    border: 30px solid #403e3e;
+    border-top: 30px solid #bfa7d5;
+    border-radius: 100%;
+    margin: auto;
+    visibility: hidden;
+    animation: spintwo 1s infinite linear;
+    position: fixed;
+    top: 175px;
+    left: 610px;
+    z-index: 1; 
+}
+
 #loading.display {
     visibility: visible;
 }
@@ -231,5 +247,17 @@ body{
     }
     to {
         transform: rotate(360deg);
+    }
+}
+
+#loadingtwo.displaytwo {
+    visibility: visible;
+}
+@keyframes spintwo {
+    from {
+        transform: rotate(360deg);
+    }
+    to {
+        transform: rotate(0deg);
     }
 }
