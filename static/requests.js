@@ -606,6 +606,10 @@ function captureInputValues(data, itemRate, div) {
             }
             })
             .catch(error => {
+                hideLoading()
+                submitButton.disabled = false;
+                consumptionButton.disabled = false;
+                makePredictionsButton.disabled = false;
                 console.error('Error:', error);
             });
     }
@@ -766,6 +770,10 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
             }
             })
             .catch(error => {
+                hideLoading()
+                submitButton.disabled = false;
+                consumptionButton.disabled = false;
+                makePredictionsButton.disabled = false;
                 console.error('Error:', error);
             });
     }
@@ -882,6 +890,10 @@ function startPredictions(data, itemRate, div) {
             
             })
             .catch(error => {
+                hideLoading()
+                submitButton.disabled = false;
+                consumptionButton.disabled = false;
+                makePredictionsButton.disabled = false;
                 console.error('Error:', error);
             });
     }
