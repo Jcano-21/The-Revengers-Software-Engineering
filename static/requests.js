@@ -1,5 +1,25 @@
-function captureInputValues(data, itemRate) {
-    
+// selecting loading div
+const loader = document.querySelector("#loading");
+
+// showing loading
+function displayLoading() {
+    loader.classList.add("display");
+    // to stop loading after some time
+    setTimeout(() => {
+        loader.classList.remove("display");
+    }, 3000000);
+}
+
+// hiding loading 
+function hideLoading() {
+    loader.classList.remove("display");
+}
+
+function captureInputValues(data, itemRate, div) {
+    itemRate.textContent = '\n                    \n     ';
+    itemRate.innerText = '';
+    itemRate.appendChild(div);
+    displayLoading()
 
     function fetchDataAndCreatePlot(data) {
         fetch('/consumable', {
@@ -12,6 +32,7 @@ function captureInputValues(data, itemRate) {
         })
             .then(response => response.json())
             .then(result => {
+                hideLoading()
                 // Parse the JSON response to an object
                 result = JSON.parse(result);
 
@@ -582,7 +603,15 @@ function captureInputValues(data, itemRate) {
     fetchDataAndCreatePlot(data);
 }
 
-function captureInputValuesCalc(categoryValue, itemRate) {
+function captureInputValuesCalc(categoryValue, itemRate, div) {
+    itemRate.textContent = '\n                    \n     ';
+    itemRate.innerText = '';
+    itemRate.appendChild(div);
+    displayLoading()
+
+
+
+
     // Define the data to send in the request
     const data = categoryValue;
 
@@ -596,6 +625,7 @@ function captureInputValuesCalc(categoryValue, itemRate) {
         })
             .then(response => response.json())
             .then(result => {
+                hideLoading()
                 // Parse the JSON response to an object
                 console.log('print first results: ', result)
                 averages = JSON.parse(result[0]);
@@ -731,10 +761,16 @@ function captureInputValuesCalc(categoryValue, itemRate) {
 
 }
 
-function startPredictions(data) {
     
 
+function startPredictions(data, itemRate, div) {
+    itemRate.textContent = '\n                    \n     ';
+    itemRate.innerText = '';
+    itemRate.appendChild(div);
+    displayLoading()
+
     function fetchDataAndCreatePlot(data) {
+        displayLoading()
         fetch('/makePredictions', {
             headers: {
                 'Content-Type': 'application/json',
@@ -745,6 +781,7 @@ function startPredictions(data) {
         })
             .then(response => response.json())
             .then(result => {
+                hideLoading()
                 // Parse the JSON response to an object
                 result = JSON.parse(result);
 

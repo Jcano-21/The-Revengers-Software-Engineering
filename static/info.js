@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Select the button element by its ID
     const itemRate = document.getElementById("calc_data");
+    const div = document.getElementById("loading");
     const itemSelectionButton = document.getElementById("itemSelection");
 
      // Select the input elements by their IDs
@@ -93,15 +94,15 @@ document.addEventListener("DOMContentLoaded", function () {
             end_date: endDateValue,
             category: categoryValue,
         };
-        captureInputValues(data, itemRate);
+        captureInputValues(data, itemRate, div);
     });
 
     // Add a click event listener to the "Submit" button
     consumptionButton.addEventListener("click", function (event) {
         
-        if (itemSelectionButton.textContent !== 'Select Item'){ // Prevent the default form submission
+        if (itemSelectionButton.textContent !== 'Select Item' && itemSelectionButton.textContent !== 'All'){ // Prevent the default form submission
             const categoryValue = itemSelectionButton.textContent;
-            captureInputValuesCalc(categoryValue, itemRate);
+            captureInputValuesCalc(categoryValue, itemRate, div);
         }
         else {
             window.alert("Please select an Item")
@@ -110,14 +111,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     makePredictionsButton.addEventListener("click", function (event) {
         
-        if (itemSelectionButton.textContent !== 'Select Item'){ // Prevent the default form submission
+        if (itemSelectionButton.textContent == 'All'){ // Prevent the default form submission
             const categoryValue = itemSelectionButton.textContent;
-            startPredictions(categoryValue);
+            startPredictions(categoryValue, itemRate, div);
+            
         }
         else {
-            window.alert("Please select an Item")
+            window.alert("Please select All for predictions.")
         }
     });
+
+    
 });
 
 

@@ -53,7 +53,7 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
     early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
     # Train the model
-    history = model.fit(X_train, y_train, epochs=100, batch_size=30, validation_data=(X_test, y_test), callbacks=[early_stopping], verbose=1)
+    history = model.fit(X_train, y_train, epochs=20, batch_size=30, validation_data=(X_test, y_test), callbacks=[early_stopping], verbose=1)
 
     # # Plot training history
     # plt.plot(history.history['loss'], label='Train Loss')

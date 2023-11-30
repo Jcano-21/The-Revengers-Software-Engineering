@@ -49,6 +49,7 @@ body{
     left: 65px;
     display: block;
     padding: 20px;
+    overflow: visible;
 }
 
 .info_squares{
@@ -203,4 +204,32 @@ body{
     position: relative;
     top: 3.75px;
     left: 140px;
+}
+
+/* creating css loader */
+
+#loading {
+    width: 40rem;
+    height: 40rem;
+    border: 30px solid #403e3e;
+    border-top: 20px solid #9c41f2;
+    border-radius: 100%;
+    margin: auto;
+    visibility: hidden;
+    animation: spin 1s infinite linear;
+    position: fixed;
+    top: 10px;
+    left: 450px;
+    z-index: 1; 
+}
+#loading.display {
+    visibility: visible;
+}
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
