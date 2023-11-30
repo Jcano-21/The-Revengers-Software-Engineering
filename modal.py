@@ -32,7 +32,7 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
 
     # Prepare data for training
     X, y = [], []
-    look_back = 30  # Adjust this based on your data and prediction needs
+    look_back = 70  # Adjust this based on your data and prediction needs
 
     for i in range(len(normalized_data) - look_back):
         X.append(normalized_data[i:i+look_back])

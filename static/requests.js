@@ -1,3 +1,10 @@
+// Select the "Submit" button
+const submitButton = document.getElementById("submitDates");
+
+// Select Info Screen buttons
+const consumptionButton = document.getElementById("consumption");
+const makePredictionsButton = document.getElementById("percent_diff");
+
 // selecting loading div
 const loader = document.querySelector("#loading");
 
@@ -33,6 +40,9 @@ function captureInputValues(data, itemRate, div) {
             .then(response => response.json())
             .then(result => {
                 hideLoading()
+                submitButton.disabled = false;
+                consumptionButton.disabled = false;
+                makePredictionsButton.disabled = false;
                 // Parse the JSON response to an object
                 result = JSON.parse(result);
 
@@ -626,6 +636,9 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
             .then(response => response.json())
             .then(result => {
                 hideLoading()
+                submitButton.disabled = false;
+                consumptionButton.disabled = false;
+                makePredictionsButton.disabled = false;
                 // Parse the JSON response to an object
                 console.log('print first results: ', result)
                 averages = JSON.parse(result[0]);
@@ -682,7 +695,7 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                             x: dates,
                             y: p_diff,
                             type: 'scatter',
-                            name: 'Percent_Difference',
+                            name: 'Rate_Percent_Difference',
                         },
                         
                         {
@@ -696,14 +709,14 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                             x: dates,
                             y: q_diff,
                             type: 'scatter',
-                            name: 'Quantity since resupply',
+                            name: 'Usage since resupply',
                         },
 
                         {
                             x: dates,
                             y: r_count,
                             type: 'scatter',
-                            name: 'Last Resupply Amount',
+                            name: 'Resupply Amount',
                         },
                     ]
 
@@ -782,6 +795,9 @@ function startPredictions(data, itemRate, div) {
             .then(response => response.json())
             .then(result => {
                 hideLoading()
+                submitButton.disabled = false;
+                consumptionButton.disabled = false;
+                makePredictionsButton.disabled = false;
                 // Parse the JSON response to an object
                 result = JSON.parse(result);
 

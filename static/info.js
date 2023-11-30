@@ -82,9 +82,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const startDateValue = startDateInput.value;
         const endDateValue = endDateInput.value;
         const categoryValue = itemSelectionButton.textContent;
+        submitButton.disabled = true;
+        consumptionButton.disabled = true;
+        makePredictionsButton.disabled = true;
+
 
         if (startDateValue >= endDateValue) {
             alert("Start date must be before the end date and not the same day.");
+            submitButton.disabled = false;
+            consumptionButton.disabled = false;
+            makePredictionsButton.disabled = false;
             return;
         }
 
@@ -99,6 +106,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add a click event listener to the "Submit" button
     consumptionButton.addEventListener("click", function (event) {
+
+        submitButton.disabled = true;
+        consumptionButton.disabled = true;
+        makePredictionsButton.disabled = true;
+
         
         if (itemSelectionButton.textContent !== 'Select Item' && itemSelectionButton.textContent !== 'All'){ // Prevent the default form submission
             const categoryValue = itemSelectionButton.textContent;
@@ -106,11 +118,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         else {
             window.alert("Please select an Item")
+            submitButton.disabled = false;
+            consumptionButton.disabled = false;
+            makePredictionsButton.disabled = false;
         }
+
+        
+
     });
 
     makePredictionsButton.addEventListener("click", function (event) {
         
+        submitButton.disabled = true;
+        consumptionButton.disabled = true;
+        makePredictionsButton.disabled = true;
+
         if (itemSelectionButton.textContent == 'All'){ // Prevent the default form submission
             const categoryValue = itemSelectionButton.textContent;
             startPredictions(categoryValue, itemRate, div);
@@ -118,8 +140,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         else {
             window.alert("Please select All for predictions.")
+            submitButton.disabled = false;
+            consumptionButton.disabled = false;
+            makePredictionsButton.disabled = false;
         }
+
     });
+
+    
 
     
 });
