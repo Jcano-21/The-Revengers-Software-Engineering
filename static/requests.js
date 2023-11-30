@@ -8,6 +8,7 @@ const makePredictionsButton = document.getElementById("percent_diff");
 // selecting loading div
 const loader = document.querySelector("#loading");
 const loadertwo = document.querySelector("#loadingtwo");
+const loaderthree = document.querySelector("#loadingthree");
 
 // showing loading
 function displayLoading() {
@@ -22,18 +23,26 @@ function displayLoading() {
     setTimeout(() => {
         loadertwo.classList.remove("displaytwo");
     }, 3000000);
+
+    loaderthree.classList.add("displaythree");
+    // to stop loading after some time
+    setTimeout(() => {
+        loaderthree.classList.remove("displaythree");
+    }, 3000000);
 }
 
 // hiding loading 
 function hideLoading() {
     loader.classList.remove("display");
     loadertwo.classList.remove("displaytwo");
+    loaderthree.classList.remove("displaythree");
 }
 
 function captureInputValues(data, itemRate, div) {
     itemRate.textContent = '\n                    \n     ';
     itemRate.innerText = '';
     itemRate.appendChild(div);
+    loaderthree.textContent = 'FETCHING DATA, PLEASE WAIT.';
     displayLoading()
 
     function fetchDataAndCreatePlot(data) {
@@ -629,6 +638,7 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
     itemRate.textContent = '\n                    \n     ';
     itemRate.innerText = '';
     itemRate.appendChild(div);
+    loaderthree.textContent = 'FETCHING DATA, PLEASE WAIT.';
     displayLoading()
 
 
@@ -799,6 +809,7 @@ function startPredictions(data, itemRate, div) {
     displayLoading()
 
     function fetchDataAndCreatePlot(data) {
+        loaderthree.textContent = 'TRAINING, MAY TAKE SEVERAL MINUTES!';
         displayLoading()
         fetch('/makePredictions', {
             headers: {
