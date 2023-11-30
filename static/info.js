@@ -13,12 +13,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Select Info Screen buttons
     const consumptionButton = document.getElementById("consumption");
-    const percentDiffButton = document.getElementById("percent_diff");
+    const makePredictionsButton = document.getElementById("percent_diff");
 
     // Select the choices by their IDs
     const acyChoice = document.getElementById("acyInserts");
     const filterChoice = document.getElementById("filterInserts");
-    const foodChoice = document.getElementById("food");
+    const all = document.getElementById("all");
     const foodRSChoice = document.getElementById("foodRS");
     const foodUSChoice = document.getElementById("foodUS");
     const ktoChoice = document.getElementById("kto");
@@ -45,12 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
         changeText(filterChoice);
     });
 
-    foodChoice.addEventListener("click", function () {
-        changeText(foodChoice);
-    });
 
-    foodChoice.addEventListener("click", function () {
-        changeText(foodChoice);
+    all.addEventListener("click", function () {
+        changeText(all);
     });
 
     foodRSChoice.addEventListener("click", function () {
@@ -105,6 +102,17 @@ document.addEventListener("DOMContentLoaded", function () {
         if (itemSelectionButton.textContent !== 'Select Item'){ // Prevent the default form submission
             const categoryValue = itemSelectionButton.textContent;
             captureInputValuesCalc(categoryValue, itemRate);
+        }
+        else {
+            window.alert("Please select an Item")
+        }
+    });
+
+    makePredictionsButton.addEventListener("click", function (event) {
+        
+        if (itemSelectionButton.textContent !== 'Select Item'){ // Prevent the default form submission
+            const categoryValue = itemSelectionButton.textContent;
+            startPredictions(categoryValue);
         }
         else {
             window.alert("Please select an Item")

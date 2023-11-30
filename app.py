@@ -137,7 +137,7 @@ def consumptionRates():
         consumables.load_flights_data(flightPlan)
         createRequest(consumables, data)
         get_resupply_dates(consumables, data)
-        
+
         trashOne, trashTwo, countData = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
 
         resupply_dates = consumables.find_resupply_dates(countData)
@@ -154,113 +154,147 @@ def consumptionRates():
         
     
 
-@app.route("/makePredictions")
+@app.route("/makePredictions", methods=['POST'])
 def makePredictions():
+
+    data = request.get_json()  # Extract JSON data from the request
     
-    start_date = '2022-01-01'
-    end_date = '2023-09-05'
+    if data == 'All':
+        start_date = '2022-01-01'
+        end_date = '2023-09-05'
 
-    categoryOne = 'ACY Inserts'
-    categoryTwo = 'Filter Inserts'
-    categoryThree = 'Food-RS'
-    categoryFour = 'Food-US'
-    categoryFive = 'KTO'
-    categorySix = 'Pretreat Tanks'
+        categoryOne = 'ACY Inserts'
+        categoryTwo = 'Filter Inserts'
+        categoryThree = 'Food-RS'
+        categoryFour = 'Food-US'
+        categoryFive = 'KTO'
+        categorySix = 'Pretreat Tanks'
+            
+        dataOne = {}
+        dataTwo = {}
+        dataThree = {}
+        dataFour = {}
+        dataFive = {}
+        dataSix = {}
+
+            
+        dataOne[f'start_date'] = start_date
+        dataOne[f'end_date'] = end_date
+        dataOne[f'category'] = categoryOne
+
+        dataTwo[f'start_date'] = start_date
+        dataTwo[f'end_date'] = end_date
+        dataTwo[f'category'] = categoryTwo
+
+        dataThree[f'start_date'] = start_date
+        dataThree[f'end_date'] = end_date
+        dataThree[f'category'] = categoryThree
+
+        dataFour[f'start_date'] = start_date
+        dataFour[f'end_date'] = end_date
+        dataFour[f'category'] = categoryFour
+
+        dataFive[f'start_date'] = start_date
+        dataFive[f'end_date'] = end_date
+        dataFive[f'category'] = categoryFive
         
-    dataOne = {}
-    dataTwo = {}
-    dataThree = {}
-    dataFour = {}
-    dataFive = {}
-    dataSix = {}
+        dataSix[f'start_date'] = start_date
+        dataSix[f'end_date'] = end_date
+        dataSix[f'category'] = categorySix
 
+        ACY = Consumables(categoryOne)
+        FilterInserts = Consumables(categoryTwo)
+        FoodRS = Consumables(categoryThree)
+        FoodUS = Consumables(categoryFour)
+        KTO = Consumables(categoryFive)
+        PretreatTanks = Consumables(categorySix)
+
+        createRequest(ACY, dataOne)
+        createRequest(FilterInserts, dataTwo)
+        createRequest(FoodRS, dataThree)
+        createRequest(FoodUS, dataFour)
+        createRequest(KTO, dataFive)
+        createRequest(PretreatTanks, dataSix)
+
+        flight = flights()
+        flights_data = getFlights(flight, dataOne)
+        flightPlan = flight.get_flight_data()
+        # Create an instance of the Consumables class
+        ACY.load_flights_data(flightPlan)
+        FilterInserts.load_flights_data(flightPlan)
+        FoodRS.load_flights_data(flightPlan)
+        FoodUS.load_flights_data(flightPlan)
+        KTO.load_flights_data(flightPlan)
+        PretreatTanks.load_flights_data(flightPlan)
+
+
+        get_resupply_dates(ACY, dataOne)
+        get_resupply_dates(FilterInserts, dataTwo)
+        get_resupply_dates(FoodRS, dataThree)
+        get_resupply_dates(FoodUS, dataFour)
+        get_resupply_dates(KTO, dataFive)
+        get_resupply_dates(PretreatTanks, dataSix)
+
+        dataACY = ACY.get_category_data()
+        resupply_dates = ACY.find_resupply_dates(dataACY)
+        resupplyOne, periods = ACY.calulateResupply(resupply_dates)
         
-    dataOne[f'start_date'] = start_date
-    dataOne[f'end_date'] = end_date
-    dataOne[f'category'] = categoryOne
+        dataFilterInserts = FilterInserts.get_category_data()
+        resupply_dates = FilterInserts.find_resupply_dates(dataFilterInserts)
+        resupplyTwo, periods = FilterInserts.calulateResupply(resupply_dates)
 
-    dataTwo[f'start_date'] = start_date
-    dataTwo[f'end_date'] = end_date
-    dataTwo[f'category'] = categoryTwo
+        dataFoodRS = FoodRS.get_category_data()
+        resupply_dates = FoodRS.find_resupply_dates(dataFoodRS)
+        resupplyThree, periods = FoodRS.calulateResupply(resupply_dates)
 
-    dataThree[f'start_date'] = start_date
-    dataThree[f'end_date'] = end_date
-    dataThree[f'category'] = categoryThree
+        dataFoodUS = FoodUS.get_category_data()
+        resupply_dates = FoodUS.find_resupply_dates(dataFoodUS)
+        resupplyFour, periods = FoodUS.calulateResupply(resupply_dates)
 
-    dataFour[f'start_date'] = start_date
-    dataFour[f'end_date'] = end_date
-    dataFour[f'category'] = categoryFour
+        dataKTO = KTO.get_category_data()
+        resupply_dates = KTO.find_resupply_dates(dataKTO)
+        resupplyFive, periods = KTO.calulateResupply(resupply_dates)
 
-    dataFive[f'start_date'] = start_date
-    dataFive[f'end_date'] = end_date
-    dataFive[f'category'] = categoryFive
-    
-    dataSix[f'start_date'] = start_date
-    dataSix[f'end_date'] = end_date
-    dataSix[f'category'] = categorySix
-
-    ACY = Consumables(categoryOne)
-    FilterInserts = Consumables(categoryTwo)
-    FoodRS = Consumables(categoryThree)
-    FoodUS = Consumables(categoryFour)
-    KTO = Consumables(categoryFive)
-    PretreatTanks = Consumables(categorySix)
-
-    createRequest(ACY, dataOne)
-    createRequest(FilterInserts, dataTwo)
-    createRequest(FoodRS, dataThree)
-    createRequest(FoodUS, dataFour)
-    createRequest(KTO, dataFive)
-    createRequest(PretreatTanks, dataSix)
-
-    get_resupply_dates(ACY, dataOne)
-    get_resupply_dates(FilterInserts, dataTwo)
-    get_resupply_dates(FoodRS, dataThree)
-    get_resupply_dates(FoodUS, dataFour)
-    get_resupply_dates(KTO, dataFive)
-    get_resupply_dates(PretreatTanks, dataSix)
-
-    resupplyOne = ACY.calulateResupply()
-    resupplyTwo = FilterInserts.calulateResupply()
-    resupplyThree = FoodRS.calulateResupply()
-    resupplyFour = FoodUS.calulateResupply()
-    resupplyFive = KTO.calulateResupply()
-    resupplySix = PretreatTanks.calulateResupply()
+        dataPretreatTanks = PretreatTanks.get_category_data()
+        resupply_dates = PretreatTanks.find_resupply_dates(dataPretreatTanks)
+        resupplySix, periods = PretreatTanks.calulateResupply(resupply_dates)
 
 
-    print ('Resupply ACY: ', resupplyOne)
-    print ('Resupply Filter Inserts: ', resupplyTwo)
-    print ('Resupply Food-RS: ', resupplyThree)
-    print ('Resupply Food-US: ', resupplyFour)
-    print ('Resupply KTO: ', resupplyFive)
-    print ('Resupply Pretreat Tanks: ', resupplySix)
+        print ('Resupply ACY: ', resupplyOne)
+        print ('Resupply Filter Inserts: ', resupplyTwo)
+        print ('Resupply Food-RS: ', resupplyThree)
+        print ('Resupply Food-US: ', resupplyFour)
+        print ('Resupply KTO: ', resupplyFive)
+        print ('Resupply Pretreat Tanks: ', resupplySix)
 
-    dfOne = ACY.get_resupply_data()
-    dfTwo = FilterInserts.get_resupply_data()
-    dfThree = FoodRS.get_resupply_data()
-    dfFour = FoodUS.get_resupply_data()
-    dfFive = KTO.get_resupply_data()
-    dfSix = PretreatTanks.get_resupply_data()
-    df_resupply_quantities = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+        dfOne = ACY.get_resupply_data()
+        dfTwo = FilterInserts.get_resupply_data()
+        dfThree = FoodRS.get_resupply_data()
+        dfFour = FoodUS.get_resupply_data()
+        dfFive = KTO.get_resupply_data()
+        dfSix = PretreatTanks.get_resupply_data()
+        df_resupply_quantities = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
-    rsOne, usOne, dfOne = ACY.get_consumables_for_date_range(dataOne['start_date'], dataOne['end_date'], dataOne['category'])
-    rsTwo, usTwo, dfTwo = FilterInserts.get_consumables_for_date_range(dataTwo['start_date'], dataTwo['end_date'], dataTwo['category'])
-    rsThree, usThree, dfThree = FoodRS.get_consumables_for_date_range(dataThree['start_date'], dataThree['end_date'], dataThree['category'])
-    rsFour, usFour, dfFour = FoodUS.get_consumables_for_date_range(dataFour['start_date'], dataFour['end_date'], dataFour['category'])
-    rsFive, usFive, dfFive = KTO.get_consumables_for_date_range(dataFive['start_date'], dataFive['end_date'], dataFive['category'])
-    rsSix, usSix, dfSix = PretreatTanks.get_consumables_for_date_range(dataSix['start_date'], dataSix['end_date'], dataSix['category'])
+        rsOne, usOne, dfOne = ACY.get_consumables_for_date_range(dataOne['start_date'], dataOne['end_date'], dataOne['category'])
+        rsTwo, usTwo, dfTwo = FilterInserts.get_consumables_for_date_range(dataTwo['start_date'], dataTwo['end_date'], dataTwo['category'])
+        rsThree, usThree, dfThree = FoodRS.get_consumables_for_date_range(dataThree['start_date'], dataThree['end_date'], dataThree['category'])
+        rsFour, usFour, dfFour = FoodUS.get_consumables_for_date_range(dataFour['start_date'], dataFour['end_date'], dataFour['category'])
+        rsFive, usFive, dfFive = KTO.get_consumables_for_date_range(dataFive['start_date'], dataFive['end_date'], dataFive['category'])
+        rsSix, usSix, dfSix = PretreatTanks.get_consumables_for_date_range(dataSix['start_date'], dataSix['end_date'], dataSix['category'])
 
-    dfOne['Category'] = categoryOne
-    dfTwo['Category'] = categoryTwo
-    dfThree['Category'] = categoryThree
-    dfFour['Category'] = categoryFour
-    dfFive['Category'] = categoryFive
-    dfSix['Category'] = categorySix
+        dfOne['Category'] = categoryOne
+        dfTwo['Category'] = categoryTwo
+        dfThree['Category'] = categoryThree
+        dfFour['Category'] = categoryFour
+        dfFive['Category'] = categoryFive
+        dfSix['Category'] = categorySix
 
 
-    df_Inventory = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+        df_Inventory = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
-    print(df_Inventory)
+        print(df_Inventory)
+    else:
+        return
 
     start_date = '2022-01-01'
     end_date_Flights = '2025-12-22'
@@ -278,11 +312,13 @@ def makePredictions():
     df_flight_plan = flight.get_flights_for_date_range(dataFlights['start_date'], dataFlights['end_date'])
 
 
-    request_modal_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+    model = request_modal_update(df_Inventory, df_flight_plan, df_resupply_quantities)
     #request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
     print(df_resupply_quantities)
-
-    return('success!!!!')
+    print('Model: ', model)
+    model_json = model.to_json(orient = 'table')
+    print('predictions json: ', model_json)
+    return jsonify(model_json)
 
 if __name__ == "__main__":
     app.run(debug=True)

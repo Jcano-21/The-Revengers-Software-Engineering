@@ -55,11 +55,11 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
     # Train the model
     history = model.fit(X_train, y_train, epochs=100, batch_size=30, validation_data=(X_test, y_test), callbacks=[early_stopping], verbose=1)
 
-    # Plot training history
-    plt.plot(history.history['loss'], label='Train Loss')
-    plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.legend()
-    plt.show()
+    # # Plot training history
+    # plt.plot(history.history['loss'], label='Train Loss')
+    # plt.plot(history.history['val_loss'], label='Validation Loss')
+    # plt.legend()
+    # plt.show()
 
     # Simulate future resupplies
     future_dates = pd.to_datetime(data_resupply['datedim'])
@@ -73,20 +73,20 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
     rate_diff_averages = data_averages['RATE_DIFF_AVERAGE']
     category = { 'AYC Inserts', 'Filter Inserts', 'Food-RS', 'Food-US', 'Pretreat Tanks', 'KTO'}
 
-    # for date, amount, rate_avg, rate_diff_avg in zip(future_dates, resupply_amounts, rate_averages, rate_diff_averages):
-    #     print("avg: ", rate_avg)
-    #     print("amount: ", amount)
-    #     # Check if the resupply date exists in the index
-    #     if date in pivot_data.index:
-    #         # Find the index corresponding to the date in the future
-    #         future_index = np.where(pivot_data.index == date)[0][0]
+    for date, amount, rate_avg, rate_diff_avg in zip(future_dates, resupply_amounts, rate_averages, rate_diff_averages):
+        print("avg: ", rate_avg)
+        print("amount: ", amount)
+        # Check if the resupply date exists in the index
+        if date in pivot_data.index:
+             # Find the index corresponding to the date in the future
+             future_index = np.where(pivot_data.index == date)[0][0]
 
-    #         # Adjust the quantities based on rate averages and rate differences
-    #         pivot_data.iloc[future_index:] += amount
+             # Adjust the quantities based on rate averages and rate differences
+             pivot_data.iloc[future_index:] += amount
 
-    #         # Simulate daily usage based on rate averages
-    #         for i in range(future_index, len(pivot_data)):
-    #             pivot_data.iloc[i] -= (rate_avg * 7)
+             # Simulate daily usage based on rate averages
+             for i in range(future_index, len(pivot_data)):
+                 pivot_data.iloc[i] -= (rate_avg * 7)
 
     # Predict future quantities
     future_dates_predict = pd.date_range(start='2023-09-06', end='2025-12-22')
@@ -109,17 +109,17 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
     os.makedirs(output_directory, exist_ok=True)
     predicted_df_LSTM.to_csv(os.path.join(output_directory, "LSTM_with_rates.csv"))
 
-    # Plot the predictions
-    plt.figure(figsize=(12, 6))
-    for category in pivot_data.columns:
-        plt.plot(pivot_data.index, pivot_data[category], label=f'Actual - {category}')
-        plt.plot(predicted_df_LSTM.index, predicted_df_LSTM[category], label=f'Predicted - {category}', linestyle='dashed')
+    # # Plot the predictions
+    # plt.figure(figsize=(12, 6))
+    # for category in pivot_data.columns:
+    #     plt.plot(pivot_data.index, pivot_data[category], label=f'Actual - {category}')
+    #     plt.plot(predicted_df_LSTM.index, predicted_df_LSTM[category], label=f'Predicted - {category}', linestyle='dashed')
 
-    plt.title('Future Quantities Prediction (LSTM with Rates)')
-    plt.xlabel('Date')
-    plt.ylabel('Quantity')
-    plt.legend()
-    plt.show()
+    # plt.title('Future Quantities Prediction (LSTM with Rates)')
+    # plt.xlabel('Date')
+    # plt.ylabel('Quantity')
+    # plt.legend()
+    # plt.show()
 
     print('Predictions (LSTM with Rates): ', predicted_df_LSTM)
     print ("Predicted: ", predicted_values)

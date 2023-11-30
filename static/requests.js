@@ -730,3 +730,108 @@ function captureInputValuesCalc(categoryValue, itemRate) {
     fetchDataAndCreatePlot(data)
 
 }
+
+function startPredictions(data) {
+    
+
+    function fetchDataAndCreatePlot(data) {
+        fetch('/makePredictions', {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            method: 'POST',
+            body: JSON.stringify(data),
+            // credentials: 'include',  // Include credentials if needed
+        })
+            .then(response => response.json())
+            .then(result => {
+                // Parse the JSON response to an object
+                result = JSON.parse(result);
+
+                console.log('Print results: ', result);
+            
+                if (data == 'All')  {
+                
+                     
+                    // Extract data for plotting
+                    const dates = result.data.map(entry => entry.index.split('T')[0]);
+                    const kto = result.data.map(entry => entry.KTO);
+                    const acyInserts = result.data.map(entry => entry['ACY Inserts']);
+                    const foodUS = result.data.map(entry => entry['Food-US']);
+                    const foodRS = result.data.map(entry => entry['Food-RS']);
+                    const pretreat = result.data.map(entry => entry['Pretreat Tanks']);
+                    const insertF = result.data.map(entry => entry['Insert Filters']);
+                    
+
+                    
+                    // Create a Plotly plot using the extracted data
+                    const data = [
+                        
+                        {
+                            x: dates,
+                            y:  kto,
+                            type: 'scatter',
+                            name: 'KTO',
+                        },
+
+                        {
+                            x: dates,
+                            y:  foodUS,
+                            type: 'scatter',
+                            name: 'Food-US',
+                        },
+
+                        {
+                            x: dates,
+                            y:  foodRS,
+                            type: 'scatter',
+                            name: 'Food-RS',
+                        },
+
+                        {
+                            x: dates,
+                            y:  acyInserts,
+                            type: 'scatter',
+                            name: 'ACY Filters',
+                        },
+
+                        {
+                            x: dates,
+                            y:  insertF,
+                            type: 'scatter',
+                            name: 'Insert Filters',
+                        },
+
+                        {
+                            x: dates,
+                            y:  pretreat,
+                            type: 'scatter',
+                            name: 'Pretreat Tanks',
+                        }
+                    ];
+
+                    const layout = {
+                        xaxis: {
+                            title: 'Date',
+                        },
+                        yaxis: {
+                            title: 'Count',
+                        },
+                        margin: { t: 20 },
+                    }; 
+
+                    Plotly.newPlot('tester', data, layout);
+                }
+    
+                    
+
+                                        
+            
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    fetchDataAndCreatePlot(data);
+}
