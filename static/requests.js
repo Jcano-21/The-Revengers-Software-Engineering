@@ -873,13 +873,6 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
 
                     {
                         x: dates,
-                        y: p_diff_tech,
-                        type: 'scatter',
-                        name: 'Percent_Difference_Tech',
-                    },
-
-                    {
-                        x: dates,
                         y: d_diff,
                         type: 'scatter',
                         name: 'Days Between Resupply',
