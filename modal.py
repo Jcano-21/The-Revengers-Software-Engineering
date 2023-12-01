@@ -68,7 +68,7 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
     print(future_dates)
     future_dates = future_dates[(future_dates >= start_date)]
 
-    resupply_amounts = data_averages['RESUPPLY_AVERAGE']
+    resupply_amounts = data_averages['USAGE_AVERAGE']
     rate_averages = data_averages['RATE_AVERAGE']
     rate_diff_averages = data_averages['RATE_DIFF_AVERAGE']
     category = { 'AYC Inserts', 'Filter Inserts', 'Food-RS', 'Food-US', 'Pretreat Tanks', 'KTO'}
