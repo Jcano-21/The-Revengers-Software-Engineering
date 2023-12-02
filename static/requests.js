@@ -745,7 +745,7 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
 
                     
                 }
-            else {
+            else if (data == 'RS-Water') {
                 //pars the json strings for water data
                 const df1Data = averages.Category;
                 const df2Data = averages.RATE_AVERAGE_POT;
@@ -894,11 +894,140 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                 };
 
                 Plotly.newPlot('tester', data, layout);
+            }
                 
+            else if (data == 'US-Water') {
+                //pars the json strings for water data
+                const df1Data = averages.Category;
+                const df2Data = averages.RATE_AVERAGE_POT;
+                const df3Data = averages.RATE_DIFF_AVERAGE_POT;
+                const df4Data = averages.RATE_AVERAGE_TECH;
+                const df5Data = averages.RATE_DIFF_AVERAGE_TECH
+                const df6Data = averages.USAGE_AVERAGE_POT
+                const df7Data = averages.USAGE_AVERAGE_TECH
+                const df8Data = averages.RESUPPLY_AVERAGE_POT
+                const df9Data = averages.RESUPPLY_AVERAGE_TECH
+                const df11Data = averages.DAYS_BETWEEN_RESUPPLY_AVERAGE
+
+
+                //If category is US-Water or RS-Water fill in text box with rate usage data
+                itemRate.textContent = 'Category: ' + df1Data + ' Rate_Pot_AVG: ' + df2Data.toFixed(4) + ' P_Diff_Pot: '  + df3Data.toFixed(3) 
+                +  'Rate_Tech_AVG: ' + df4Data.toFixed(4) + ' P_Diff_Tech: ' + df5Data.toFixed(4) + ' Usage_Pot: '  + df6Data.toFixed(3) 
+                + ' Usage_Tech: ' + df7Data.toFixed(4) + ' Resupply_Pot: ' + df8Data.toFixed(4) + ' Resupply_Tech: ' + df9Data.toFixed(4) +' Days_Between_Resupply_AVG: ' + df11Data.toFixed(4);
+                console.log('DF5: ', df5Data);
                 
+                //Grab attributes to plot on graph
+                const c_rate_pot = resupply_periods.data.map(entry => entry.calculated_rate);
+                const a_rate_pot = resupply_periods.data.map(entry => entry.rate);
+                const p_diff_pot = resupply_periods.data.map(entry => entry.Percent_Difference);
+                const a_rate_tech = resupply_periods.data.map(entry => entry.rateTech);
+                const c_rate_tech = resupply_periods.data.map(entry => entry.calculated_rate_tech);
+                const p_diff_tech = resupply_periods.data.map(entry => entry.Percent_DifferenceTech);
+                const u_pot = resupply_periods.data.map(entry => entry.Usage_Pot);
+                const u_tech = resupply_periods.data.map(entry => entry.Usage_Tech);
+                const r_pot = resupply_periods.data.map(entry => entry.Resupply_Pot);
+                const r_tech = resupply_periods.data.map(entry => entry.Resupply_Tech);
+                const d_diff = resupply_periods.data.map(entry => entry.Diff_in_days);
+                const dates = resupply_periods.data.map(entry => entry.date.split('T')[0]);
+
+
+                console.log('DF1: ', df1Data);
+                console.log('DF2: ', df2Data);
+                console.log('DF3: ', df3Data);
+                console.log('DF4: ', df4Data);
+
                 
+                const data = [
+                    {
+                        x: dates,
+                        y: c_rate_pot,
+                        type: 'scatter',
+                        name: 'Calculated_Rate_Pot',
+                    },
+
+                    {
+                        x: dates,
+                        y: a_rate_pot,
+                        type: 'scatter',
+                        name: 'Assumed_Rate_Pot',
+                    },
+
+                    {
+                        x: dates,
+                        y: p_diff_pot,
+                        type: 'scatter',
+                        name: 'Percent_Difference_Pot',
+                    },
+                    
+                    {
+                        x: dates,
+                        y: a_rate_tech,
+                        type: 'scatter',
+                        name: 'Assumed_Rate_Tech',
+                    },
+
+                    {
+                        x: dates,
+                        y: c_rate_tech,
+                        type: 'scatter',
+                        name: 'Calculated_Rate_Tech',
+                    },
+
+                    {
+                        x: dates,
+                        y: p_diff_tech,
+                        type: 'scatter',
+                        name: 'Percent_Difference_Tech',
+                    },
+
+                    {
+                        x: dates,
+                        y: u_pot,
+                        type: 'scatter',
+                        name: 'Usage_Pot',
+                    },
+
+                    {
+                        x: dates,
+                        y: u_tech,
+                        type: 'scatter',
+                        name: 'Usage_Tech',
+                    },
+
+                    {
+                        x: dates,
+                        y: r_pot,
+                        type: 'scatter',
+                        name: 'Resupply_Pot',
+                    },
+
+                    {
+                        x: dates,
+                        y: r_tech,
+                        type: 'scatter',
+                        name: 'Resupply_Tech',
+                    },
+
+                    {
+                        x: dates,
+                        y: d_diff,
+                        type: 'scatter',
+                        name: 'Days Between Resupply',
+                    }
+                ]
+
+                const layout = {
+                    xaxis: {
+                        title: 'Date',
+                    },
+                    yaxis: {
+                        title: 'Count',
+                    },
+                    margin: { t: 20 },
+                };
+
+                Plotly.newPlot('tester', data, layout);
                 
-            
             }
             })
             .catch(error => {

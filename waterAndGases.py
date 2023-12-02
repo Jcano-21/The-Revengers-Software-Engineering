@@ -67,8 +67,8 @@ class waterAndGases:
 
             print('PERCENT DIFFERENCE IN RATES: ', percent_difference)
             print('PERCENT DIFFERENCE IN RATESTECH: ', percent_difference_tech)
-
-            consumption_data = {'rate': ratesPot, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference,
+            date_string = str(end_date)
+            consumption_data = {'date': date_string, 'rate': ratesPot, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference,
              'rateTech': ratesTech, 'calculated_rate_tech': calculated_consumption_tech, 'Percent_DifferenceTech': percent_difference_tech}
             print('Consumption_data: ', consumption_data)
             json_consumption_data = json.dumps(consumption_data)
@@ -371,6 +371,57 @@ class waterAndGases:
         print(dateList)
         return (dateList)
     
+
+    def find_resupply_datesGAS(self, df):
+    
+        #capture first date from from inventory dataframe
+        startDate = df['datedim'][0]
+        #get resupply vehicle dock dates
+        flights = self.flights
+        #Create list starting with first date
+        print('dataframe: ', df)
+        dateList = [startDate]
+        print('flights :', flights)
+        #loop through inventory dataframe and flight data frame and compare dates
+        for i, row in df.iterrows():
+            resupply = ''
+            #Check for date that has an increase in quantity
+            if row['adjusted_O2kg'] < (df['adjusted_O2kg'][i + 1]):
+                #loop through flight dates
+                for j, flight_row in flights.iterrows():
+                    category_date = row['datedim']
+                    print('debug print: ', category_date)
+                    flight_date = flight_row['datedim']
+                    #get difference in days of flight date and inventory date
+                    difference_in_days = (flight_date) - (category_date)
+                     # see if flight is within 7 days of increase                  
+                    if difference_in_days.days <= 7 and difference_in_days.days >= -7:
+                        print('flight: ', flight_date)
+                        print(row['datedim'])   
+                        print(df['datedim'][i + 1])
+                        print(row['adjusted_O2kg'])
+                        print(df['adjusted_O2kg'][i + 1])
+                        print('difference in days: ', difference_in_days.days)
+                        #set resupply as new date
+                        resupply = row['datedim']
+                        print('resupply date: ', resupply)
+                        #creat dummy list and add resupply
+                        dummyList = [resupply]
+                        break;
+            print('length: ', len(df), 'iteration: ', i + 1)
+            #Check if resupply is empty
+            if resupply != '' :
+                #add dummy list to date list
+                dateList = dateList + dummyList
+            if (len(df) - 1) > i + 1:
+                continue;
+            else : 
+                break;
+        #print(resupply)
+        print(dateList)
+        return (dateList)
+    
+    
     def calulateResupplyRS(self, resupply_dates):
         category = self._category
         resupply_dates = pd.DataFrame(resupply_dates)
@@ -566,9 +617,7 @@ class waterAndGases:
         sumSix = 0
         sumSeven = 0
         sumEight = 0
-        sumNine = 0
         sumTen = 0
-        sumEleven = 0
         print('items: ', frames.items())
         for key in frames.keys():
             print(key, frames[key])
@@ -588,14 +637,10 @@ class waterAndGases:
                     sumFive = sumFive + newFrame[innerKey]
                 if innerKey == 'Usage_Tech':
                     sumSix = sumSix + newFrame[innerKey]
-                if innerKey == 'Usage_Rod':
-                    sumEleven = sumEleven + newFrame[innerKey]
                 if innerKey == 'Resupply_Pot':
                     sumSeven = sumSeven + newFrame[innerKey]
                 if innerKey == 'Resupply_Tech':
                     sumEight = sumEight + newFrame[innerKey]
-                if innerKey == 'Resupply_Rod':
-                    sumNine = sumNine + newFrame[innerKey]
                 if innerKey == 'Diff_in_days':
                     sumTen = sumTen + newFrame[innerKey]
         print('sum one : ', sumOne)
@@ -604,10 +649,8 @@ class waterAndGases:
         print('sum four: ', sumFour )
         print('sum Five: ', sumFive )
         print('sum Six: ', sumSix )
-        print('sum Eleven: ', sumEleven )
         print('sum Seven: ', sumSeven )
         print('sum Eight: ', sumEight )
-        print('sum Eight: ', sumNine )
         print('sum Eight: ', sumTen )
 
 
@@ -618,10 +661,8 @@ class waterAndGases:
         diff_average_tech = sumFour / len(frames)
         usage_pot = sumFive / len(frames)
         usage_tech = sumSix / len(frames)
-        usage_rod = sumEleven / len(frames)
         resupply_p = sumSeven / len(frames)
         resupply_t = sumEight / len(frames)
-        resupply_r = sumNine / len(frames)
         diff_days = sumTen / len(frames)
 
 
@@ -635,10 +676,8 @@ class waterAndGases:
             'RATE_DIFF_AVERAGE_TECH': diff_average_tech,
             'USAGE_AVERAGE_POT': usage_pot,
             'USAGE_AVERAGE_TECH': usage_tech,
-            'USAGE_AVERAGE_ROD': usage_rod,
             'RESUPPLY_AVERAGE_POT': resupply_p,
             'RESUPPLY_AVERAGE_TECH': resupply_t,
-            'RESUPPLY_AVERAGE_ROD': resupply_r,
             'DAYS_BETWEEN_RESUPPLY_AVERAGE': diff_days
 
         }
