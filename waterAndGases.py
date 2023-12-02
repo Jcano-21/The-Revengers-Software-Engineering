@@ -775,9 +775,9 @@ class waterAndGases:
                     sumOne = sumOne + newFrame[innerKey]
                 if innerKey == 'Percent_Difference_O2':
                     sumTwo = sumTwo + newFrame[innerKey]
-                if innerKey == 'calculated_rate_tech_N2':
+                if innerKey == 'calculated_rate_N2':
                     sumThree = sumThree + newFrame[innerKey]
-                if innerKey == 'Percent_DifferenceTech_N2':
+                if innerKey == 'Percent_Difference_N2':
                     sumFour = sumFour + newFrame[innerKey]
                 if innerKey == 'Usage_O2':
                     sumFive = sumFive + newFrame[innerKey]
@@ -813,14 +813,14 @@ class waterAndGases:
         # Create a dictionary with the averages
         averages_dict = {
             'Category': self._category,
-            'RATE_AVERAGE_POT_O2': rate_average_O2,
-            'RATE_DIFF_AVERAGE_POT_O2': diff_average_O2,
-            'RATE_AVERAGE_TECH_N2': rateTechAvg_N2,
-            'RATE_DIFF_AVERAGE_TECH_N2': diff_average_tech_N2,
-            'USAGE_AVERAGE_POT_N2': usage_N2,
-            'USAGE_AVERAGE_TECH_N2': usage_N2,
-            'RESUPPLY_AVERAGE_POT_O2': resupply_O2,
-            'RESUPPLY_AVERAGE_TECH_N2': resupply_N2,
+            'RATE_AVERAGE_O2': rate_average_O2,
+            'RATE_DIFF_AVERAGE_O2': diff_average_O2,
+            'RATE_AVERAGE_N2': rateTechAvg_N2,
+            'RATE_DIFF_AVERAGE_N2': diff_average_tech_N2,
+            'USAGE_AVERAGE_N2': usage_N2,
+            'USAGE_AVERAGE_N2': usage_N2,
+            'RESUPPLY_AVERAGE_O2': resupply_O2,
+            'RESUPPLY_AVERAGE_N2': resupply_N2,
             'DAYS_BETWEEN_RESUPPLY_AVERAGE': diff_days
 
         }
