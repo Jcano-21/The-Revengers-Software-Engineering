@@ -779,13 +779,13 @@ class waterAndGases:
                     sumThree = sumThree + newFrame[innerKey]
                 if innerKey == 'Percent_DifferenceTech_N2':
                     sumFour = sumFour + newFrame[innerKey]
-                if innerKey == 'Usage_Pot_N2':
+                if innerKey == 'Usage_O2':
                     sumFive = sumFive + newFrame[innerKey]
-                if innerKey == 'Usage_Tech_N2':
+                if innerKey == 'Usage_N2':
                     sumSix = sumSix + newFrame[innerKey]
-                if innerKey == 'Resupply_Pot_O2':
+                if innerKey == 'Resupply_O2':
                     sumSeven = sumSeven + newFrame[innerKey]
-                if innerKey == 'Resupply_Tech_N2':
+                if innerKey == 'Resupply_N2':
                     sumEight = sumEight + newFrame[innerKey]
                 if innerKey == 'Diff_in_days':
                     sumTen = sumTen + newFrame[innerKey]
@@ -804,10 +804,10 @@ class waterAndGases:
         diff_average_O2 = sumTwo / len(frames)
         rateTechAvg_N2 = sumThree / len(frames)
         diff_average_tech_N2 = sumFour / len(frames)
-        usage_pot_N2 = sumFive / len(frames)
-        usage_tech_N2 = sumSix / len(frames)
-        resupply_pot_O2 = sumSeven / len(frames)
-        resupply_tech_N2 = sumEight / len(frames)
+        usage_O2 = sumFive / len(frames)
+        usage_N2 = sumSix / len(frames)
+        resupply_O2 = sumSeven / len(frames)
+        resupply_N2 = sumEight / len(frames)
         diff_days = sumTen / len(frames)
 
         # Create a dictionary with the averages
@@ -817,10 +817,10 @@ class waterAndGases:
             'RATE_DIFF_AVERAGE_POT_O2': diff_average_O2,
             'RATE_AVERAGE_TECH_N2': rateTechAvg_N2,
             'RATE_DIFF_AVERAGE_TECH_N2': diff_average_tech_N2,
-            'USAGE_AVERAGE_POT_N2': usage_pot_N2,
-            'USAGE_AVERAGE_TECH_N2': usage_tech_N2,
-            'RESUPPLY_AVERAGE_POT_O2': resupply_pot_O2,
-            'RESUPPLY_AVERAGE_TECH_N2': resupply_tech_N2,
+            'USAGE_AVERAGE_POT_N2': usage_N2,
+            'USAGE_AVERAGE_TECH_N2': usage_N2,
+            'RESUPPLY_AVERAGE_POT_O2': resupply_O2,
+            'RESUPPLY_AVERAGE_TECH_N2': resupply_N2,
             'DAYS_BETWEEN_RESUPPLY_AVERAGE': diff_days
 
         }
