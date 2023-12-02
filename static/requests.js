@@ -677,15 +677,7 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                     console.log('print periods: ', resupply_periods)
                     console.log('print dates: ', resupply_Dates)
 
-                    if (dataCheck !== 'Food'){
-                    //Fill Warning box with assume rate, calculated rate, and percent difference
-                    itemRate.textContent = 'Category: ' + df1Data + ' Rate_Average: ' + df2Data + ' Rate_Diff: ' + df3Data + ' DBR: '  + df4Data + ' Usage_Avg: ' + df5Data + ' Ressuply_Avg: ' + df6Data;
-                    }
-                    else {
-                        itemRate.textContent = 'Rate not yet calculated.'
-
-                    }
-
+                
                     const c_rate = resupply_periods.data.map(entry => entry.calculated_rate);
                     const a_rate = resupply_periods.data.map(entry => entry.rate);
                     const p_diff = resupply_periods.data.map(entry => entry.Percent_Difference);
@@ -764,11 +756,13 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                 const df9Data = averages.RESUPPLY_AVERAGE_TECH
                 const df10Data = averages.RESUPPLY_AVERAGE_ROD
                 const df11Data = averages.DAYS_BETWEEN_RESUPPLY_AVERAGE
+                const df12Data = averages.USAGE_AVERAGE_ROD
+
 
                 //If category is US-Water or RS-Water fill in text box with rate usage data
                 itemRate.textContent = 'Category: ' + df1Data + ' Rate_Pot_AVG: ' + df2Data.toFixed(4) + ' P_Diff_Pot: '  + df3Data.toFixed(3) 
                 +  'Rate_Tech_AVG: ' + df4Data.toFixed(4) + ' P_Diff_Tech: ' + df5Data.toFixed(4) + ' Usage_Pot: '  + df6Data.toFixed(3) 
-                + ' Usage_Tech: ' + df7Data.toFixed(4) + ' Resupply_Pot: ' + df8Data.toFixed(4) + ' Resupply_Tech: ' + df9Data.toFixed(4) + ' Resupply_Rod: ' + df10Data.toFixed(5) + ' Days_Between_Resupply_AVG: ' + df11Data.toFixed(4);
+                + ' Usage_Tech: ' + df7Data.toFixed(4) + ' Usage_Rod: ' + df12Data.toFixed(4) + ' Resupply_Pot: ' + df8Data.toFixed(4) + ' Resupply_Tech: ' + df9Data.toFixed(4) + ' Resupply_Rod: ' + df10Data.toFixed(5) + ' Days_Between_Resupply_AVG: ' + df11Data.toFixed(4);
                 console.log('DF5: ', df5Data);
                 
                 //Grab attributes to plot on graph
@@ -780,6 +774,7 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                 const p_diff_tech = resupply_periods.data.map(entry => entry.Percent_DifferenceTech);
                 const u_pot = resupply_periods.data.map(entry => entry.Usage_Pot);
                 const u_tech = resupply_periods.data.map(entry => entry.Usage_Tech);
+                const u_rod = resupply_periods.data.map(entry => entry.Usage_Rod);
                 const r_pot = resupply_periods.data.map(entry => entry.Resupply_Pot);
                 const r_tech = resupply_periods.data.map(entry => entry.Resupply_Tech);
                 const r_rod = resupply_periods.data.map(entry => entry.Resupply_Rod);
@@ -848,6 +843,13 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                         y: u_tech,
                         type: 'scatter',
                         name: 'Usage_Tech',
+                    },
+
+                    {
+                        x: dates,
+                        y: u_rod,
+                        type: 'scatter',
+                        name: 'Usage_Rod',
                     },
 
                     {

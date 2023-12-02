@@ -148,7 +148,7 @@ def consumptionRates():
         print('Resupply: ', resupply)
         print('found dates: ', resupply_dates)
 
-    else:
+    elif data['category'] == 'RS-Water' :
         flight = flights()
         flights_data = getFlights(flight, data)
         flightPlan = flight.get_flight_data()
@@ -161,8 +161,30 @@ def consumptionRates():
 
         countData = WandG.get_RSWater_for_date_range(data['start_date'], data['end_date'])
 
+        resupply_dates = WandG.find_resupply_datesRS(countData)
+        results, periods = WandG.calulateResupplyRS(resupply_dates)
+        df = pd.DataFrame(resupply_dates)
+        newDataJson = df.to_json()
+        print('periods: ', periods)
+        print('Resupply: ', newDataJson)
+        print('results: ', results)
+        print(flightPlan)
+
+    elif data['category'] == 'US-Water' :
+        flight = flights()
+        flights_data = getFlights(flight, data)
+        flightPlan = flight.get_flight_data()
+        # Create an instance of the waterAndGases class
+        WandG = waterAndGases(data['category'])
+        WandG.load_flights_data(flightPlan)
+        getWaterAndGas(WandG, data)
+        
+
+
+        countData = WandG.get_USWater_for_date_range(data['start_date'], data['end_date'])
+
         resupply_dates = WandG.find_resupply_dates(countData)
-        results, periods = WandG.calulateResupply(resupply_dates)
+        results, periods = WandG.calulateResupplyUS(resupply_dates)
         df = pd.DataFrame(resupply_dates)
         newDataJson = df.to_json()
         print('periods: ', periods)
