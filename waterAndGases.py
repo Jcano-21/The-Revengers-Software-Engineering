@@ -813,14 +813,14 @@ class waterAndGases:
         # Create a dictionary with the averages
         averages_dict = {
             'Category': self._category,
-            'RATE_AVERAGE_POT': rate_average_O2,
-            'RATE_DIFF_AVERAGE_POT': diff_average_O2,
-            'RATE_AVERAGE_TECH': rateTechAvg_N2,
-            'RATE_DIFF_AVERAGE_TECH': diff_average_tech_N2,
-            'USAGE_AVERAGE_POT': usage_pot_N2,
-            'USAGE_AVERAGE_TECH': usage_tech_N2,
-            'RESUPPLY_AVERAGE_POT': resupply_pot_O2,
-            'RESUPPLY_AVERAGE_TECH': resupply_tech_N2,
+            'RATE_AVERAGE_POT_O2': rate_average_O2,
+            'RATE_DIFF_AVERAGE_POT_O2': diff_average_O2,
+            'RATE_AVERAGE_TECH_N2': rateTechAvg_N2,
+            'RATE_DIFF_AVERAGE_TECH_N2': diff_average_tech_N2,
+            'USAGE_AVERAGE_POT_N2': usage_pot_N2,
+            'USAGE_AVERAGE_TECH_N2': usage_tech_N2,
+            'RESUPPLY_AVERAGE_POT_O2': resupply_pot_O2,
+            'RESUPPLY_AVERAGE_TECH_N2': resupply_tech_N2,
             'DAYS_BETWEEN_RESUPPLY_AVERAGE': diff_days
 
         }
