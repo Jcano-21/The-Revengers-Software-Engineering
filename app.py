@@ -183,7 +183,7 @@ def consumptionRates():
 
         countData = WandG.get_USWater_for_date_range(data['start_date'], data['end_date'])
 
-        resupply_dates = WandG.find_resupply_dates(countData)
+        resupply_dates = WandG.find_resupply_datesUS(countData)
         results, periods = WandG.calulateResupplyUS(resupply_dates)
         df = pd.DataFrame(resupply_dates)
         newDataJson = df.to_json()

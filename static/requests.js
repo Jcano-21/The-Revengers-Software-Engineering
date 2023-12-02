@@ -677,7 +677,9 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                     console.log('print periods: ', resupply_periods)
                     console.log('print dates: ', resupply_Dates)
 
-                
+                    //Fill Warning box with assume rate, calculated rate, and percent difference
+                    itemRate.textContent = 'Category: ' + df1Data + ' Rate_Average: ' + df2Data + ' Rate_Diff: ' + df3Data + ' DBR: '  + df4Data + ' Usage_Avg: ' + df5Data + ' Ressuply_Avg: ' + df6Data;
+                    
                     const c_rate = resupply_periods.data.map(entry => entry.calculated_rate);
                     const a_rate = resupply_periods.data.map(entry => entry.rate);
                     const p_diff = resupply_periods.data.map(entry => entry.Percent_Difference);

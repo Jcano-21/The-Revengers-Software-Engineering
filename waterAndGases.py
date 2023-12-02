@@ -336,7 +336,7 @@ class waterAndGases:
         for i, row in df.iterrows():
             resupply = ''
             #Check for date that has an increase in quantity
-            if row['rodnik_potableL'] < (df['rodnik_potableL'][i + 1]):
+            if row['corrected_potableL'] < (df['corrected_potableL'][i + 1]):
                 #loop through flight dates
                 for j, flight_row in flights.iterrows():
                     category_date = row['datedim']
@@ -349,8 +349,8 @@ class waterAndGases:
                         print('flight: ', flight_date)
                         print(row['datedim'])   
                         print(df['datedim'][i + 1])
-                        print(row['rodnik_potableL'])
-                        print(df['rodnik_potableL'][i + 1])
+                        print(row['corrected_potableL'])
+                        print(df['corrected_potableL'][i + 1])
                         print('difference in days: ', difference_in_days.days)
                         #set resupply as new date
                         resupply = row['datedim']
@@ -544,7 +544,7 @@ class waterAndGases:
                 # start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
                 # end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
 
-            result = self.calculate_RS_water(start_date_str, end_date_str)
+            result = self.calculate_US_water(start_date_str, end_date_str)
             result_json = json.loads(result)
                 # Add the results to the list
             category_data_list.append(result_json)
