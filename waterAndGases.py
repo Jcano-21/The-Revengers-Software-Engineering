@@ -741,7 +741,7 @@ class waterAndGases:
                 # start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
                 # end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
 
-            result = self.calculate_US_water(start_date_str, end_date_str)
+            result = self.calculate_US_Gas(start_date_str, end_date_str)
             result_json = json.loads(result)
             # Add the results to the list
             category_data_list.append(result_json)

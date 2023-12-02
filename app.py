@@ -18,6 +18,7 @@ from linearReg import request_modal_LR_update
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -49,7 +50,7 @@ def consumable():
     RScrew_counts_json = RScrew_counts_data.to_json(orient='table')
 
     if data['category'] != 'RS-Water' and data['category'] != 'US-Water' and data['category'] != 'Gases':
-        
+
         # Create an instance of the Consumables class
         consumables = Consumables(data['category'])
         results = createRequest(consumables, data)
@@ -60,18 +61,19 @@ def consumable():
         us_consumables_json = us_consumables.to_json(orient='table')
         consumables_json = category_info.to_json(orient='table')
 
-
         if (data['category'] != 'Food'):
-            consumption = consumables.calculate_something(data['start_date'], data['end_date'], data['category'], crew_data)
+            consumption = consumables.calculate_something(
+                data['start_date'], data['end_date'], data['category'], crew_data)
 
-        #print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
+        # print('PRINTING flights_data FROM APP.PY REQUEST:', flights_data)
 
-
-        #List to make keys for dictionary
+        # List to make keys for dictionary
         if (data['category'] != 'Food'):
-            df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data, consumption, rs_consumables_json, us_consumables_json]
+            df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json,
+                       flights_data, consumption, rs_consumables_json, us_consumables_json]
         else:
-            df_list = [consumables_json, UScrew_counts_json, RScrew_counts_json, flights_data]
+            df_list = [consumables_json, UScrew_counts_json,
+                       RScrew_counts_json, flights_data]
 
         frames = {}
 
@@ -79,7 +81,7 @@ def consumable():
             frames[f'df{i+1}'] = Any
             newDataJson = js.dumps(frames)
 
-        #print('Json string of data: ', newDataJson)
+        # print('Json string of data: ', newDataJson)
 
         return jsonify(newDataJson)
     else:
@@ -87,19 +89,23 @@ def consumable():
         results = getWaterAndGas(waterAndGas, data)
         print('You selected water or Gas.', results)
 
-        
         if data['category'] == 'US-Water':
-            waterConsumption = waterAndGas.calculate_US_water(data['start_date'], data['end_date'])
+            waterConsumption = waterAndGas.calculate_US_water(
+                data['start_date'], data['end_date'])
 
-            df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data, waterConsumption]
+            df_list = [results, UScrew_counts_json,
+                       RScrew_counts_json, flights_data, waterConsumption]
         elif data['category'] == 'RS-Water':
-            waterConsumption = waterAndGas.calculate_RS_water(data['start_date'], data['end_date'])
+            waterConsumption = waterAndGas.calculate_RS_water(
+                data['start_date'], data['end_date'])
 
-            df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data, waterConsumption]       
-            
+            df_list = [results, UScrew_counts_json,
+                       RScrew_counts_json, flights_data, waterConsumption]
+
         else:
-            df_list = [results, UScrew_counts_json, RScrew_counts_json, flights_data]
-        
+            df_list = [results, UScrew_counts_json,
+                       RScrew_counts_json, flights_data]
+
         frames = {}
 
         for i, Any in enumerate(df_list):
@@ -108,26 +114,24 @@ def consumable():
 
         return jsonify(newDataJson)
 
+
 @app.route("/consumptionRates", methods=['POST'])
 def consumptionRates():
     category_data = request.get_json()  # Extract JSON data from the request
 
-    #flight = flights()
-    #flights_data = getFlights(flight, data)
+    # flight = flights()
+    # flights_data = getFlights(flight, data)
     start_date = '2022-01-01'
     end_date = '2023-09-05'
     category = category_data
-        
+
     data = {}
 
-        
     data[f'start_date'] = start_date
     data[f'end_date'] = end_date
     data[f'category'] = category
     print(data)
-        
-    
-    
+
     if data['category'] != 'RS-Water' and data['category'] != 'US-Water' and data['category'] != 'Gases':
         flight = flights()
         flights_data = getFlights(flight, data)
@@ -138,7 +142,8 @@ def consumptionRates():
         createRequest(consumables, data)
         get_resupply_dates(consumables, data)
 
-        trashOne, trashTwo, countData = consumables.get_consumables_for_date_range(data['start_date'], data['end_date'], data['category'])
+        trashOne, trashTwo, countData = consumables.get_consumables_for_date_range(
+            data['start_date'], data['end_date'], data['category'])
 
         resupply_dates = consumables.find_resupply_dates(countData)
         results, periods = consumables.calulateResupply(resupply_dates)
@@ -148,7 +153,7 @@ def consumptionRates():
         print('Resupply: ', resupply)
         print('found dates: ', resupply_dates)
 
-    elif data['category'] == 'RS-Water' :
+    elif data['category'] == 'RS-Water':
         flight = flights()
         flights_data = getFlights(flight, data)
         flightPlan = flight.get_flight_data()
@@ -156,10 +161,9 @@ def consumptionRates():
         WandG = waterAndGases(data['category'])
         WandG.load_flights_data(flightPlan)
         getWaterAndGas(WandG, data)
-        
 
-
-        countData = WandG.get_RSWater_for_date_range(data['start_date'], data['end_date'])
+        countData = WandG.get_RSWater_for_date_range(
+            data['start_date'], data['end_date'])
 
         resupply_dates = WandG.find_resupply_datesRS(countData)
         results, periods = WandG.calulateResupplyRS(resupply_dates)
@@ -170,7 +174,7 @@ def consumptionRates():
         print('results: ', results)
         print(flightPlan)
 
-    elif data['category'] == 'US-Water' :
+    elif data['category'] == 'US-Water':
         flight = flights()
         flights_data = getFlights(flight, data)
         flightPlan = flight.get_flight_data()
@@ -178,10 +182,9 @@ def consumptionRates():
         WandG = waterAndGases(data['category'])
         WandG.load_flights_data(flightPlan)
         getWaterAndGas(WandG, data)
-        
 
-
-        countData = WandG.get_USWater_for_date_range(data['start_date'], data['end_date'])
+        countData = WandG.get_USWater_for_date_range(
+            data['start_date'], data['end_date'])
 
         resupply_dates = WandG.find_resupply_datesUS(countData)
         results, periods = WandG.calulateResupplyUS(resupply_dates)
@@ -192,7 +195,7 @@ def consumptionRates():
         print('results: ', results)
         print(flightPlan)
 
-    elif data['category'] == 'Gases' :
+    elif data['category'] == 'Gases':
         flight = flights()
         flights_data = getFlights(flight, data)
         flightPlan = flight.get_flight_data()
@@ -200,13 +203,12 @@ def consumptionRates():
         WandG = waterAndGases(data['category'])
         WandG.load_flights_data(flightPlan)
         getWaterAndGas(WandG, data)
-        
 
-
-        countData = WandG.get_Gas_for_date_range(data['start_date'], data['end_date'])
+        countData = WandG.get_Gas_for_date_range(
+            data['start_date'], data['end_date'])
 
         resupply_dates = WandG.find_resupply_datesGAS(countData)
-        results, periods = WandG.calulateResupplyGAS(resupply_dates)
+        results, periods = WandG.calulateResupplyGas(resupply_dates)
         df = pd.DataFrame(resupply_dates)
         newDataJson = df.to_json()
         print('periods: ', periods)
@@ -215,15 +217,12 @@ def consumptionRates():
         print(flightPlan)
     return jsonify(results, periods, newDataJson)
 
-        
-        
-    
 
 @app.route("/makePredictions", methods=['POST'])
 def makePredictions():
 
     data = request.get_json()  # Extract JSON data from the request
-    
+
     if data == 'All':
         start_date = '2022-01-01'
         end_date = '2023-09-05'
@@ -234,7 +233,7 @@ def makePredictions():
         categoryFour = 'Food-US'
         categoryFive = 'KTO'
         categorySix = 'Pretreat Tanks'
-            
+
         dataOne = {}
         dataTwo = {}
         dataThree = {}
@@ -242,7 +241,6 @@ def makePredictions():
         dataFive = {}
         dataSix = {}
 
-            
         dataOne[f'start_date'] = start_date
         dataOne[f'end_date'] = end_date
         dataOne[f'category'] = categoryOne
@@ -262,7 +260,7 @@ def makePredictions():
         dataFive[f'start_date'] = start_date
         dataFive[f'end_date'] = end_date
         dataFive[f'category'] = categoryFive
-        
+
         dataSix[f'start_date'] = start_date
         dataSix[f'end_date'] = end_date
         dataSix[f'category'] = categorySix
@@ -292,7 +290,6 @@ def makePredictions():
         KTO.load_flights_data(flightPlan)
         PretreatTanks.load_flights_data(flightPlan)
 
-
         get_resupply_dates(ACY, dataOne)
         get_resupply_dates(FilterInserts, dataTwo)
         get_resupply_dates(FoodRS, dataThree)
@@ -303,7 +300,7 @@ def makePredictions():
         dataACY = ACY.get_category_data()
         resupply_dates = ACY.find_resupply_dates(dataACY)
         resupplyOne, periods = ACY.calulateResupply(resupply_dates)
-        
+
         dataFilterInserts = FilterInserts.get_category_data()
         resupply_dates = FilterInserts.find_resupply_dates(dataFilterInserts)
         resupplyTwo, periods = FilterInserts.calulateResupply(resupply_dates)
@@ -324,13 +321,12 @@ def makePredictions():
         resupply_dates = PretreatTanks.find_resupply_dates(dataPretreatTanks)
         resupplySix, periods = PretreatTanks.calulateResupply(resupply_dates)
 
-
-        print ('Resupply ACY: ', resupplyOne)
-        print ('Resupply Filter Inserts: ', resupplyTwo)
-        print ('Resupply Food-RS: ', resupplyThree)
-        print ('Resupply Food-US: ', resupplyFour)
-        print ('Resupply KTO: ', resupplyFive)
-        print ('Resupply Pretreat Tanks: ', resupplySix)
+        print('Resupply ACY: ', resupplyOne)
+        print('Resupply Filter Inserts: ', resupplyTwo)
+        print('Resupply Food-RS: ', resupplyThree)
+        print('Resupply Food-US: ', resupplyFour)
+        print('Resupply KTO: ', resupplyFive)
+        print('Resupply Pretreat Tanks: ', resupplySix)
 
         dfOne = ACY.get_resupply_data()
         dfTwo = FilterInserts.get_resupply_data()
@@ -338,14 +334,21 @@ def makePredictions():
         dfFour = FoodUS.get_resupply_data()
         dfFive = KTO.get_resupply_data()
         dfSix = PretreatTanks.get_resupply_data()
-        df_resupply_quantities = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+        df_resupply_quantities = pd.concat(
+            [dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
-        rsOne, usOne, dfOne = ACY.get_consumables_for_date_range(dataOne['start_date'], dataOne['end_date'], dataOne['category'])
-        rsTwo, usTwo, dfTwo = FilterInserts.get_consumables_for_date_range(dataTwo['start_date'], dataTwo['end_date'], dataTwo['category'])
-        rsThree, usThree, dfThree = FoodRS.get_consumables_for_date_range(dataThree['start_date'], dataThree['end_date'], dataThree['category'])
-        rsFour, usFour, dfFour = FoodUS.get_consumables_for_date_range(dataFour['start_date'], dataFour['end_date'], dataFour['category'])
-        rsFive, usFive, dfFive = KTO.get_consumables_for_date_range(dataFive['start_date'], dataFive['end_date'], dataFive['category'])
-        rsSix, usSix, dfSix = PretreatTanks.get_consumables_for_date_range(dataSix['start_date'], dataSix['end_date'], dataSix['category'])
+        rsOne, usOne, dfOne = ACY.get_consumables_for_date_range(
+            dataOne['start_date'], dataOne['end_date'], dataOne['category'])
+        rsTwo, usTwo, dfTwo = FilterInserts.get_consumables_for_date_range(
+            dataTwo['start_date'], dataTwo['end_date'], dataTwo['category'])
+        rsThree, usThree, dfThree = FoodRS.get_consumables_for_date_range(
+            dataThree['start_date'], dataThree['end_date'], dataThree['category'])
+        rsFour, usFour, dfFour = FoodUS.get_consumables_for_date_range(
+            dataFour['start_date'], dataFour['end_date'], dataFour['category'])
+        rsFive, usFive, dfFive = KTO.get_consumables_for_date_range(
+            dataFive['start_date'], dataFive['end_date'], dataFive['category'])
+        rsSix, usSix, dfSix = PretreatTanks.get_consumables_for_date_range(
+            dataSix['start_date'], dataSix['end_date'], dataSix['category'])
 
         dfOne['Category'] = categoryOne
         dfTwo['Category'] = categoryTwo
@@ -354,8 +357,8 @@ def makePredictions():
         dfFive['Category'] = categoryFive
         dfSix['Category'] = categorySix
 
-
-        df_Inventory = pd.concat([dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+        df_Inventory = pd.concat(
+            [dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
         print(df_Inventory)
     else:
@@ -365,7 +368,7 @@ def makePredictions():
     end_date_Flights = '2025-12-22'
 
     categoryFlights = 'ACY Inserts'
-        
+
     dataFlights = {}
 
     dataFlights[f'start_date'] = start_date
@@ -374,16 +377,18 @@ def makePredictions():
 
     flight = flights()
     getFlights(flight, dataFlights)
-    df_flight_plan = flight.get_flights_for_date_range(dataFlights['start_date'], dataFlights['end_date'])
+    df_flight_plan = flight.get_flights_for_date_range(
+        dataFlights['start_date'], dataFlights['end_date'])
 
-
-    model = request_modal_update(df_Inventory, df_flight_plan, df_resupply_quantities)
-    #request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+    model = request_modal_update(
+        df_Inventory, df_flight_plan, df_resupply_quantities)
+    # request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
     print(df_resupply_quantities)
     print('Model: ', model)
-    model_json = model.to_json(orient = 'table')
+    model_json = model.to_json(orient='table')
     print('predictions json: ', model_json)
     return jsonify(model_json)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
