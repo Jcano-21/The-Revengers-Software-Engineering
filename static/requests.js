@@ -1083,7 +1083,7 @@ function startPredictions(data, itemRate, div) {
                     const foodUS = result.data.map(entry => entry['Food-US']);
                     const foodRS = result.data.map(entry => entry['Food-RS']);
                     const pretreat = result.data.map(entry => entry['Pretreat Tanks']);
-                    const insertF = result.data.map(entry => entry['Insert Filters']);
+                    const insertF = result.data.map(entry => entry['Filter Inserts']);
                     
 
                     
