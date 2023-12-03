@@ -25,7 +25,7 @@ class waterAndGases:
 
     def calculate_US_Gas(self, start_date, end_date):
         # Filter category_info based on category
-            USGas_info = self.Gas_data
+            USGas_info = self._Gas_data
             print('start date: ', USGas_info)
 
 
@@ -70,10 +70,10 @@ class waterAndGases:
 
 
             if not resupply_quantity.empty:
-                before_count_USO2 = end_date_consumption.US_02Kg.iloc[0]
+                before_count_USO2 = end_date_consumption.US_O2Kg.iloc[0]
                 print('Before count: ', before_count_USO2)
-                print('quantity USO2 ', resupply_quantity.US_02Kg.iloc[0])
-                resupply_count_USO2 = resupply_quantity.US_02Kg.iloc[0]
+                print('quantity USO2 ', resupply_quantity.US_O2Kg.iloc[0])
+                resupply_count_USO2 = resupply_quantity.US_O2Kg.iloc[0]
                 resupply_diff_USO2 = resupply_count_USO2 - before_count_USO2
                 print(' resupply count USO2: ', resupply_count_USO2)
                 print('Resupply difference USO2', resupply_diff_USO2)
@@ -86,7 +86,7 @@ class waterAndGases:
                 print(' resupply count USN2 : ', resupply_count_USN2)
                 print('Resupply difference USN2', resupply_diff_USN2)
             
-            difference_consumption = start_date_consumption.remaining_US_02Kg.iloc[0] - end_date_consumption.remaining_US_02Kg.iloc[0] 
+            difference_consumption = start_date_consumption.remaining_US_O2Kg.iloc[0] - end_date_consumption.remaining_US_02Kg.iloc[0] 
             difference_consumption_USN2 = start_date_consumption.US_N2kg.iloc[0]  - end_date_consumption.US_N2kg.iloc[0]
 
             print('DATES: ', start_date_consumption, end_date_consumption)
