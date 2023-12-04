@@ -838,3 +838,23 @@ class waterAndGases:
         print('new df :', newDF)
         dfList_json = newDF.to_json(orient='table')
         return averages_json, dfList_json
+
+    def get_rswater_data(self):
+        df = self._RSWater_data
+
+        return (df)
+
+    def get_uswater_data(self):
+        df = self._USWater_data
+
+        return (df)
+
+    def get_gases_data(self):
+        df = self._Gas_data
+
+        return (df)
+
+    def get_resupply_data(self):
+        df = self._resupply_data
+
+        return (df)
