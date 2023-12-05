@@ -70,10 +70,10 @@ class waterAndGases:
 
 
             if not resupply_quantity.empty:
-                before_count_USO2 = end_date_consumption.US_O2Kg.iloc[0]
+                before_count_USO2 = end_date_consumption.US_O2kg.iloc[0]
                 print('Before count: ', before_count_USO2)
-                print('quantity USO2 ', resupply_quantity.US_O2Kg.iloc[0])
-                resupply_count_USO2 = resupply_quantity.US_O2Kg.iloc[0]
+                print('quantity USO2 ', resupply_quantity.US_O2kg.iloc[0])
+                resupply_count_USO2 = resupply_quantity.US_O2kg.iloc[0]
                 resupply_diff_USO2 = resupply_count_USO2 - before_count_USO2
                 print(' resupply count USO2: ', resupply_count_USO2)
                 print('Resupply difference USO2', resupply_diff_USO2)
@@ -86,8 +86,8 @@ class waterAndGases:
                 print(' resupply count USN2 : ', resupply_count_USN2)
                 print('Resupply difference USN2', resupply_diff_USN2)
             
-            difference_consumption = start_date_consumption.remaining_US_O2Kg.iloc[0] - end_date_consumption.remaining_US_02Kg.iloc[0] 
-            difference_consumption_USN2 = start_date_consumption.US_N2kg.iloc[0]  - end_date_consumption.US_N2kg.iloc[0]
+            difference_consumption = start_date_consumption.US_O2kg.iloc[0] - end_date_consumption.US_O2kg.iloc[-1] 
+            difference_consumption_USN2 = start_date_consumption.US_N2kg.iloc[0]  - end_date_consumption.US_N2kg.iloc[-1]
 
             print('DATES: ', start_date_consumption, end_date_consumption)
             print('DIFFERENCE between dates: ', difference_consumption)
@@ -97,7 +97,7 @@ class waterAndGases:
             difference_in_days = (end_date_consumption.datedim.iloc[-1]) - (start_date_consumption.datedim.iloc[0])
             print('Difference in Days: ', (end_date_consumption.datedim.iloc[-1]), ' : ', (start_date_consumption.datedim.iloc[0]), ' : ', difference_in_days.days, ' Days')
             calculated_consumption = (((difference_consumption + (2.68 * difference_in_days.days)) / difference_in_days.days) / 3)
-            calculated_consumption_USN2 = (((difference_consumption_USN2 + (10.435 * difference_in_days.days)) / difference_in_days.days))
+            calculated_consumption_USN2 = (difference_consumption_USN2 / difference_in_days.days) / difference_in_days.days
             print('Calculated Consumption Rate: ', calculated_consumption)
             print('Here is the current Rate: ', ratesO2)
             print('Calculated Consumption Rate USN2: ', calculated_consumption_USN2)
@@ -126,6 +126,7 @@ class waterAndGases:
 
         # Ensure 'datedim' column is in datetime format
         USWater_info['datedim'] = pd.to_datetime(USWater_info['datedim'])
+        resupply_quantity_date = end_date + pd.DateOffset(days=7)
 
         # Convert start_date and end_date to datetime format
         start_date = pd.to_datetime(start_date)
@@ -145,6 +146,47 @@ class waterAndGases:
         if end_date_consumption.empty:
             end_date_consumption = USWater_info[(
                 USWater_info['datedim'] == USWater_info.datedim.iloc[-1])]
+            
+        resupply_quantity = USWater_info[(
+            USWater_info['datedim'] == resupply_quantity_date)]
+
+        if resupply_quantity.empty:
+            print('resupply  empty')
+            resupply_quantity = USWater_info[(
+                USWater_info['datedim'] == USWater_info.datedim.iloc[-1])]
+
+        print('start: ', start_date_consumption, 'End: ',
+              end_date_consumption, ' resupply: ', resupply_quantity)
+
+        whileCount = 7
+        dfLen = len(USWater_info) - len(end_date_consumption)
+        print('DF length: ', dfLen)
+
+        while resupply_quantity.empty and whileCount < dfLen:
+            resupply_quantity = USWater_info[(
+                USWater_info['datedim'] == resupply_quantity_date + pd.DateOffset(days=whileCount))]
+            whileCount = whileCount + 7
+
+        if not resupply_quantity.empty:
+            before_count_pot = end_date_consumption.corrected_potableL.iloc[0]
+            print('Before count: ', before_count_pot)
+            print('quantity potable ',
+                  resupply_quantity.corrected_potableL.iloc[0])
+            resupply_count_pot = resupply_quantity.corrected_potableL.iloc[0]
+            resupply_diff_pot = resupply_count_pot - before_count_pot
+            print(' resupply count potable: ', resupply_count_pot)
+            print('Resupply difference potable', resupply_diff_pot)
+
+            before_count_tech = end_date_consumption.corrected_technicalL.iloc[0]
+
+            print('quantity tech ', resupply_quantity.corrected_technicalL.iloc[0])
+            resupply_count_tech = resupply_quantity.corrected_technicalL.iloc[0]
+            resupply_diff_tech = resupply_count_tech - before_count_tech
+            print(' resupply count tech : ', resupply_count_tech)
+            print('Resupply difference tech', resupply_diff_tech)
+
+            
+
         difference_consumption = start_date_consumption.corrected_potableL.iloc[
             0] - end_date_consumption.corrected_potableL.iloc[-1]
         difference_consumption_technical = start_date_consumption.corrected_technicalL.iloc[
@@ -175,12 +217,12 @@ class waterAndGases:
         print('PERCENT DIFFERENCE IN RATESTECH: ', percent_difference_tech)
         date_string = str(end_date)
         consumption_data = {'date': date_string, 'rate': ratesPot, 'calculated_rate': calculated_consumption, 'Percent_Difference': percent_difference,
-                            'rateTech': ratesTech, 'calculated_rate_tech': calculated_consumption_tech, 'Percent_DifferenceTech': percent_difference_tech}
+                            'rateTech': ratesTech, 'calculated_rate_tech': calculated_consumption_tech, 'Percent_DifferenceTech': percent_difference_tech, 'Usage_Pot': difference_consumption, 'Usage_Tech': difference_consumption_technical, 'Resupply_Pot': resupply_diff_pot, 'Resupply_Tech':resupply_diff_tech, 'Diff_in_days': difference_in_days.days}
         print('Consumption_data: ', consumption_data)
         json_consumption_data = json.dumps(consumption_data)
         print('percent difference json: ', json_consumption_data)
         return json_consumption_data
-
+        
     def calculate_RS_water(self, start_date, end_date):
         # Filter category_info based on category
         RSWater_info = self._RSWater_data
@@ -766,7 +808,7 @@ class waterAndGases:
         print('sum Six: ', sumSix)
         print('sum Seven: ', sumSeven)
         print('sum Eight: ', sumEight)
-        print('sum Eight: ', sumTen)
+        print('sum Ten: ', sumTen)
 
         rate_average = sumOne / len(frames)
         print('average_rate: ', rate_average)
@@ -867,13 +909,13 @@ class waterAndGases:
 
             for innerKey in newFrame.keys():
                 print(innerKey, newFrame[innerKey])
-                if innerKey == 'calculated_rate_for_O2':
+                if innerKey == 'calculated_rate_O2':
                     sumOne = sumOne + newFrame[innerKey]
                 if innerKey == 'Percent_Difference_O2':
                     sumTwo = sumTwo + newFrame[innerKey]
                 if innerKey == 'calculated_rate_N2':
                     sumThree = sumThree + newFrame[innerKey]
-                if innerKey == 'Percent_Difference_N2':
+                if innerKey == 'Percent_DifferenceN2':
                     sumFour = sumFour + newFrame[innerKey]
                 if innerKey == 'Usage_O2':
                     sumFive = sumFive + newFrame[innerKey]
@@ -893,7 +935,7 @@ class waterAndGases:
         print('sum Six: ', sumSix)
         print('sum Seven: ', sumSeven)
         print('sum Eight: ', sumEight)
-        print('sum Eight: ', sumTen)
+        print('sum Ten: ', sumTen)
 
         rate_average_O2 = sumOne / len(frames)
         print('average_rate: ', rate_average_O2)
@@ -913,7 +955,7 @@ class waterAndGases:
             'RATE_DIFF_AVERAGE_O2': diff_average_O2,
             'RATE_AVERAGE_N2': rateTechAvg_N2,
             'RATE_DIFF_AVERAGE_N2': diff_average_tech_N2,
-            'USAGE_AVERAGE_N2': usage_N2,
+            'USAGE_AVERAGE_O2': usage_O2,
             'USAGE_AVERAGE_N2': usage_N2,
             'RESUPPLY_AVERAGE_O2': resupply_O2,
             'RESUPPLY_AVERAGE_N2': resupply_N2,

@@ -14,7 +14,6 @@ from crews_query import getCrewCounts
 import sqlalchemy as sa
 import pymysql
 from modal import request_modal_update
-from linearReg import request_modal_LR_update
 
 app = Flask(__name__)
 
@@ -361,8 +360,91 @@ def makePredictions():
             [dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
         print(df_Inventory)
-    else:
-        return
+    elif data == 'RS-Water':
+        
+        start_date = '2022-01-01'
+        end_date = '2023-09-05'
+
+        categoryOne = 'RS-Water'
+        categoryTwo = 'US-Water'
+        categoryThree = 'Gases'
+        
+
+        dataOne = {}
+        dataTwo = {}
+        dataThree = {}
+
+
+        dataOne[f'start_date'] = start_date
+        dataOne[f'end_date'] = end_date
+        dataOne[f'category'] = categoryOne
+
+        dataTwo[f'start_date'] = start_date
+        dataTwo[f'end_date'] = end_date
+        dataTwo[f'category'] = categoryTwo
+
+        dataThree[f'start_date'] = start_date
+        dataThree[f'end_date'] = end_date
+        dataThree[f'category'] = categoryThree
+
+        
+        RSWater = waterAndGases(categoryOne)
+        USWater = waterAndGases(categoryTwo)
+        Gases = waterAndGases(categoryThree)
+        
+        getWaterAndGas(RSWater, dataOne)
+        getWaterAndGas(USWater, dataTwo)
+        getWaterAndGas(Gases, dataThree)
+        
+        flight = flights()
+        flights_data = getFlights(flight, dataOne)
+        flightPlan = flight.get_flight_data()
+        # Create an instance of the Consumables class
+        RSWater.load_flights_data(flightPlan)
+        USWater.load_flights_data(flightPlan)
+        Gases.load_flights_data(flightPlan)
+        
+        get_resupply_dates(RSWater, dataOne)
+        get_resupply_dates(USWater, dataTwo)
+        get_resupply_dates(Gases, dataThree)
+        
+        dataRSWater = RSWater.get_rswater_data()
+        resupply_dates = RSWater.find_resupply_datesRS(dataRSWater)
+        resupplyOne, periods = RSWater.calulateResupplyRS(resupply_dates)
+
+        dataUSWater = USWater.get_uswater_data()
+        resupply_dates = USWater.find_resupply_datesUS(dataUSWater)
+        resupplyTwo, periods = USWater.calulateResupplyUS(resupply_dates)
+
+        dataGases = Gases.get_gases_data()
+        resupply_dates = Gases.find_resupply_datesGAS(dataGases)
+        resupplyThree, periods = Gases.calulateResupplyGas(resupply_dates)
+
+        print('Resupply RSWater: ', resupplyOne)
+        print('Resupply USWater: ', resupplyTwo)
+        print('Resupply Gases: ', resupplyThree)
+  
+
+        dfOne = RSWater.get_resupply_data()
+        dfTwo = USWater.get_resupply_data()
+        dfThree = Gases.get_resupply_data()
+        df_resupply_quantities = pd.concat(
+            [dfOne, dfTwo, dfThree], ignore_index=True)
+
+        rwWater, dfOne = RSWater.get_RSWater_for_date_range(
+            dataOne['start_date'], dataOne['end_date'], dataOne['category'])
+        usWater, dfTwo = USWater.get_USWater_for_date_range(
+            dataTwo['start_date'], dataTwo['end_date'], dataTwo['category'])
+        gases, dfThree = Gases.get_Gas_for_date_range(
+            dataThree['start_date'], dataThree['end_date'], dataThree['category'])
+       
+        dfOne['Category'] = categoryOne
+        dfTwo['Category'] = categoryTwo
+        dfThree['Category'] = categoryThree
+        
+
+        df_WaterAndGases = pd.concat(
+            [dfOne, dfTwo, dfThree], ignore_index=True)
 
     start_date = '2022-01-01'
     end_date_Flights = '2025-12-22'

@@ -1029,6 +1029,140 @@ function captureInputValuesCalc(categoryValue, itemRate, div) {
                 Plotly.newPlot('tester', data, layout);
                 
             }
+
+            else if (data == 'Gases') {
+                //pars the json strings for water data
+                const df1Data = averages.Category;
+                const df2Data = averages.RATE_AVERAGE_O2;
+                const df3Data = averages.RATE_DIFF_AVERAGE_O2;
+                const df4Data = averages.RATE_AVERAGE_N2;
+                const df5Data = averages.RATE_DIFF_AVERAGE_N2
+                const df6Data = averages.USAGE_AVERAGE_O2
+                const df7Data = averages.USAGE_AVERAGE_N2
+                const df8Data = averages.RESUPPLY_AVERAGE_O2
+                const df9Data = averages.RESUPPLY_AVERAGE_N2
+                const df11Data = averages.DAYS_BETWEEN_RESUPPLY_AVERAGE
+
+
+                //If category is US-Water or RS-Water fill in text box with rate usage data
+                itemRate.textContent = 'Category: ' + df1Data + ' Rate_O2_AVG: ' + df2Data.toFixed(4) + ' P_Diff_O2: '  + df3Data.toFixed(3) 
+                +  'Rate_N2_AVG: ' + df4Data.toFixed(4) + ' P_Diff_N2: ' + df5Data.toFixed(4) + ' Usage_O2: '  + df6Data 
+                + ' Usage_N2: ' + df7Data.toFixed(4) + ' Resupply_O2: ' + df8Data.toFixed(4) + ' Resupply_N2: ' + df9Data.toFixed(4) +' Days_Between_Resupply_AVG: ' + df11Data.toFixed(4);
+                console.log('DF5: ', df5Data);
+                
+                //Grab attributes to plot on graph
+                const c_rate_O2 = resupply_periods.data.map(entry => entry.calculated_rate_O2);
+                const a_rate_O2 = resupply_periods.data.map(entry => entry.rate);
+                const p_diff_O2 = resupply_periods.data.map(entry => entry.Percent_Difference_O2);
+                const a_rate_N2 = resupply_periods.data.map(entry => entry.rateUSN2);
+                const c_rate_N2 = resupply_periods.data.map(entry => entry.calculated_rate_N2);
+                const p_diff_N2 = resupply_periods.data.map(entry => entry.Percent_DifferenceN2);
+                const u_O2 = resupply_periods.data.map(entry => entry.Usage_O2);
+                const u_N2 = resupply_periods.data.map(entry => entry.Usage_N2);
+                const r_O2 = resupply_periods.data.map(entry => entry.Resupply_O2);
+                const r_N2 = resupply_periods.data.map(entry => entry.Resupply_N2);
+                const d_diff = resupply_periods.data.map(entry => entry.Diff_in_days);
+                const dates = resupply_periods.data.map(entry => entry.date.split('T')[0]);
+
+
+                console.log('DF1: ', df1Data);
+                console.log('DF2: ', df2Data);
+                console.log('DF3: ', df3Data);
+                console.log('DF4: ', df4Data);
+
+                
+                const data = [
+                    {
+                        x: dates,
+                        y: c_rate_O2,
+                        type: 'scatter',
+                        name: 'Calculated_Rate_O2',
+                    },
+
+                    {
+                        x: dates,
+                        y: a_rate_O2,
+                        type: 'scatter',
+                        name: 'Assumed_Rate_O2',
+                    },
+
+                    {
+                        x: dates,
+                        y: p_diff_O2,
+                        type: 'scatter',
+                        name: 'Percent_Difference_O2',
+                    },
+                    
+                    {
+                        x: dates,
+                        y: a_rate_N2,
+                        type: 'scatter',
+                        name: 'Assumed_Rate_N2',
+                    },
+
+                    {
+                        x: dates,
+                        y: c_rate_N2,
+                        type: 'scatter',
+                        name: 'Calculated_Rate_N2',
+                    },
+
+                    {
+                        x: dates,
+                        y: p_diff_N2,
+                        type: 'scatter',
+                        name: 'Percent_Difference_N2',
+                    },
+
+                    {
+                        x: dates,
+                        y: u_O2,
+                        type: 'scatter',
+                        name: 'Usage_O2',
+                    },
+
+                    {
+                        x: dates,
+                        y: u_N2,
+                        type: 'scatter',
+                        name: 'Usage_N2',
+                    },
+
+                    {
+                        x: dates,
+                        y: r_O2,
+                        type: 'scatter',
+                        name: 'Resupply_O2',
+                    },
+
+                    {
+                        x: dates,
+                        y: r_N2,
+                        type: 'scatter',
+                        name: 'Resupply_N2',
+                    },
+
+                    {
+                        x: dates,
+                        y: d_diff,
+                        type: 'scatter',
+                        name: 'Days Between Resupply',
+                    }
+                ]
+
+                const layout = {
+                    xaxis: {
+                        title: 'Date',
+                    },
+                    yaxis: {
+                        title: 'Count',
+                    },
+                    margin: { t: 20 },
+                };
+
+                Plotly.newPlot('tester', data, layout);
+                
+            }
             })
             .catch(error => {
                 hideLoading()

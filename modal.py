@@ -32,7 +32,7 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
 
     # Prepare data for training
     X, y = [], []
-    look_back = 70  # Adjust this based on your data and prediction needs
+    look_back = 7  # Adjust this based on your data and prediction needs
 
     for i in range(len(normalized_data) - look_back):
         X.append(normalized_data[i:i+look_back])
@@ -53,7 +53,7 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
     early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
     # Train the model
-    history = model.fit(X_train, y_train, epochs=15, batch_size=30, validation_data=(X_test, y_test), callbacks=[early_stopping], verbose=1)
+    history = model.fit(X_train, y_train, epochs=100, batch_size=30, validation_data=(X_test, y_test), callbacks=[early_stopping], verbose=1)
 
     # # Plot training history
     # plt.plot(history.history['loss'], label='Train Loss')
