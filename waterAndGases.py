@@ -39,6 +39,50 @@ class waterAndGases:
         df = self._Gas_data
         return(df)
 
+    def calculate_US_Gas(self, start_date, end_date):
+        # Filter category_info based on category
+            USGas_info = self._Gas_data
+            print('start date: ', USGas_info)
+
+
+            # Ensure 'datedim' column is in datetime format
+            USGas_info['datedim'] = pd.to_datetime(USGas_info['datedim'])
+
+            # Convert start_date and end_date to datetime format
+            start_date = pd.to_datetime(start_date)
+            end_date = pd.to_datetime(end_date)
+            resupply_quantity_date = end_date + pd.DateOffset(days=7)
+            print('start: ', start_date, ' end: ', end_date, ' resupply: ', resupply_quantity_date)
+
+            # Filter based on date range
+            newStart = USGas_info.datedim.iloc[0]
+            start_date_consumption = USGas_info[(USGas_info['datedim'] == start_date)]
+
+            if start_date_consumption.empty:
+                print('end date empty')
+                start_date_consumption = USGas_info[(USGas_info['datedim'] == newStart)]
+
+            end_date_consumption = USGas_info[(USGas_info['datedim'] == end_date)]
+
+            if end_date_consumption.empty:
+                print('end date empty')
+                end_date_consumption = USGas_info[(USGas_info['datedim'] == USGas_info.datedim.iloc[-2])]
+
+            resupply_quantity = USGas_info[(USGas_info['datedim'] == resupply_quantity_date )]
+
+            if resupply_quantity.empty:
+                print('resupply  empty')
+                resupply_quantity = USGas_info[(USGas_info['datedim'] == USGas_info.datedim.iloc[-1])]
+
+            print('start: ', start_date_consumption, 'End: ', end_date_consumption, ' resupply: ', resupply_quantity)
+
+            whileCount = 7
+            dfLen = len(USGas_info) - len(end_date_consumption)
+            print('DF length: ', dfLen)
+
+            while resupply_quantity.empty and whileCount < dfLen:
+                resupply_quantity = USGas_info[(USGas_info['datedim'] == resupply_quantity_date + pd.DateOffset(days=whileCount))]
+                whileCount = whileCount + 7
 
 
     def calculate_US_water(self, start_date, end_date):
