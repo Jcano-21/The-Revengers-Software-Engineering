@@ -22,102 +22,24 @@ class waterAndGases:
 
     def load_resupply_data(self, df):
         self._resupply_data = df
+    
+    def load_resupply_dates(self, df):
+        self._resupply_dates = df
 
-    def calculate_US_Gas(self, start_date, end_date):
-        # Filter category_info based on category
-            USGas_info = self._Gas_data
-            print('start date: ', USGas_info)
-
-
-            # Ensure 'datedim' column is in datetime format
-            USGas_info['datedim'] = pd.to_datetime(USGas_info['datedim'])
-
-            # Convert start_date and end_date to datetime format
-            start_date = pd.to_datetime(start_date)
-            end_date = pd.to_datetime(end_date)
-            resupply_quantity_date = end_date + pd.DateOffset(days=7)
-            print('start: ', start_date, ' end: ', end_date, ' resupply: ', resupply_quantity_date)
-
-            # Filter based on date range
-            newStart = USGas_info.datedim.iloc[0]
-            start_date_consumption = USGas_info[(USGas_info['datedim'] == start_date)]
-
-            if start_date_consumption.empty:
-                print('end date empty')
-                start_date_consumption = USGas_info[(USGas_info['datedim'] == newStart)]
-
-            end_date_consumption = USGas_info[(USGas_info['datedim'] == end_date)]
-
-            if end_date_consumption.empty:
-                print('end date empty')
-                end_date_consumption = USGas_info[(USGas_info['datedim'] == USGas_info.datedim.iloc[-2])]
-
-            resupply_quantity = USGas_info[(USGas_info['datedim'] == resupply_quantity_date )]
-
-            if resupply_quantity.empty:
-                print('resupply  empty')
-                resupply_quantity = USGas_info[(USGas_info['datedim'] == USGas_info.datedim.iloc[-1])]
-
-            print('start: ', start_date_consumption, 'End: ', end_date_consumption, ' resupply: ', resupply_quantity)
-            
-            whileCount = 7
-            dfLen = len(USGas_info) - len(end_date_consumption)
-            print('DF length: ', dfLen)
-            
-            while resupply_quantity.empty and whileCount < dfLen:
-                resupply_quantity = USGas_info[(USGas_info['datedim'] == resupply_quantity_date + pd.DateOffset(days=whileCount))]
-                whileCount = whileCount + 7
+    def get_resupply_data(self):
+        df = self._resupply_data
+        return(df)
+    def get_rswater_data(self):
+        df = self._RSWater_data
+        return(df)
+    def get_uswater_data(self):
+        df = self._USWater_data
+        return(df)
+    def get_gases_data(self):
+        df = self._Gas_data
+        return(df)
 
 
-            if not resupply_quantity.empty:
-                before_count_USO2 = end_date_consumption.US_O2kg.iloc[0]
-                print('Before count: ', before_count_USO2)
-                print('quantity USO2 ', resupply_quantity.US_O2kg.iloc[0])
-                resupply_count_USO2 = resupply_quantity.US_O2kg.iloc[0]
-                resupply_diff_USO2 = resupply_count_USO2 - before_count_USO2
-                print(' resupply count USO2: ', resupply_count_USO2)
-                print('Resupply difference USO2', resupply_diff_USO2)
-
-                before_count_USN2= end_date_consumption.US_N2kg.iloc[0]
-
-                print('quantity USN2 ', resupply_quantity.US_N2kg.iloc[0])
-                resupply_count_USN2 = resupply_quantity.US_N2kg.iloc[0]
-                resupply_diff_USN2= resupply_count_USN2 - before_count_USN2
-                print(' resupply count USN2 : ', resupply_count_USN2)
-                print('Resupply difference USN2', resupply_diff_USN2)
-            
-            difference_consumption = start_date_consumption.US_O2kg.iloc[0] - end_date_consumption.US_O2kg.iloc[-1] 
-            difference_consumption_USN2 = start_date_consumption.US_N2kg.iloc[0]  - end_date_consumption.US_N2kg.iloc[-1]
-
-            print('DATES: ', start_date_consumption, end_date_consumption)
-            print('DIFFERENCE between dates: ', difference_consumption)
-            ratesO2 = 2.5
-            ratesN2 = 0.487649
-                
-            difference_in_days = (end_date_consumption.datedim.iloc[-1]) - (start_date_consumption.datedim.iloc[0])
-            print('Difference in Days: ', (end_date_consumption.datedim.iloc[-1]), ' : ', (start_date_consumption.datedim.iloc[0]), ' : ', difference_in_days.days, ' Days')
-            calculated_consumption = (((difference_consumption + (2.68 * difference_in_days.days)) / difference_in_days.days) / 3)
-            calculated_consumption_USN2 = (difference_consumption_USN2 / difference_in_days.days) / difference_in_days.days
-            print('Calculated Consumption Rate: ', calculated_consumption)
-            print('Here is the current Rate: ', ratesO2)
-            print('Calculated Consumption Rate USN2: ', calculated_consumption_USN2)
-            print('Here is the current Rate: ', ratesN2)
-            percent_difference = ((calculated_consumption - ratesO2) * 100) / ratesO2 
-            percent_difference_USN2 = ((calculated_consumption_USN2 - ratesN2) * 100) / ratesN2 
-
-            print('PERCENT DIFFERENCE IN RATES: ', percent_difference)
-            print('PERCENT DIFFERENCE IN RATESUSN2: ', percent_difference_USN2)
-            date_string = str(end_date)
-
-            consumption_data = {'date': date_string, 'rate': ratesO2, 'calculated_rate_O2': calculated_consumption, 'Percent_Difference_O2': percent_difference,
-            'rateUSN2': ratesN2, 'calculated_rate_N2': calculated_consumption_USN2, 'Percent_DifferenceN2': percent_difference_USN2,
-            'Usage_O2': difference_consumption, 'Usage_N2': difference_consumption_USN2,
-            'Resupply_O2': resupply_diff_USO2, 'Resupply_N2': resupply_diff_USN2, 'Diff_in_days': difference_in_days.days}
-            
-            print('Consumption_data: ', consumption_data)
-            json_consumption_data = json.dumps(consumption_data)
-            print('percent difference json: ', json_consumption_data)
-            return json_consumption_data
 
     def calculate_US_water(self, start_date, end_date):
         # Filter category_info based on category
@@ -976,3 +898,110 @@ class waterAndGases:
         print('new df :', newDF)
         dfList_json = newDF.to_json(orient='table')
         return averages_json, dfList_json
+    
+    def calculate_US_Gas(self, start_date, end_date):
+            # Filter category_info based on category
+            USGas_info = self._Gas_data
+            print('start date: ', USGas_info)
+
+            USGas_info['newO2kg'] = USGas_info['US_O2kg'] + USGas_info['RS_O2kg']
+            USGas_info['newN2kg'] = USGas_info['US_N2kg'] + USGas_info['RS_N2kg']
+
+            USGas_info = USGas_info.drop('US_O2kg', axis=1)
+            USGas_info = USGas_info.drop('RS_O2kg', axis=1)
+            USGas_info = USGas_info.drop('US_N2kg', axis=1)
+            USGas_info = USGas_info.drop('RS_N2kg', axis=1)
+
+            
+
+            # Ensure 'datedim' column is in datetime format
+            USGas_info['datedim'] = pd.to_datetime(USGas_info['datedim'])
+
+            # Convert start_date and end_date to datetime format
+            start_date = pd.to_datetime(start_date)
+            end_date = pd.to_datetime(end_date)
+            resupply_quantity_date = end_date + pd.DateOffset(days=7)
+            print('start: ', start_date, ' end: ', end_date, ' resupply: ', resupply_quantity_date)
+
+            # Filter based on date range
+            newStart = USGas_info.datedim.iloc[0]
+            start_date_consumption = USGas_info[(USGas_info['datedim'] == start_date)]
+
+            if start_date_consumption.empty:
+                print('end date empty')
+                start_date_consumption = USGas_info[(USGas_info['datedim'] == newStart)]
+
+            end_date_consumption = USGas_info[(USGas_info['datedim'] == end_date)]
+
+            if end_date_consumption.empty:
+                print('end date empty')
+                end_date_consumption = USGas_info[(USGas_info['datedim'] == USGas_info.datedim.iloc[-2])]
+
+            resupply_quantity = USGas_info[(USGas_info['datedim'] == resupply_quantity_date )]
+
+            if resupply_quantity.empty:
+                print('resupply  empty')
+                resupply_quantity = USGas_info[(USGas_info['datedim'] == USGas_info.datedim.iloc[-1])]
+
+            print('start: ', start_date_consumption, 'End: ', end_date_consumption, ' resupply: ', resupply_quantity)
+            
+            whileCount = 7
+            dfLen = len(USGas_info) - len(end_date_consumption)
+            print('DF length: ', dfLen)
+            
+            while resupply_quantity.empty and whileCount < dfLen:
+                resupply_quantity = USGas_info[(USGas_info['datedim'] == resupply_quantity_date + pd.DateOffset(days=whileCount))]
+                whileCount = whileCount + 7
+
+
+            if not resupply_quantity.empty:
+                before_count_USO2 = end_date_consumption.newO2kg.iloc[0]
+                print('Before count: ', before_count_USO2)
+                print('quantity USO2 ', resupply_quantity.newO2kg.iloc[0])
+                resupply_count_USO2 = resupply_quantity.newO2kg.iloc[0]
+                resupply_diff_USO2 = resupply_count_USO2 - before_count_USO2
+                print(' resupply count USO2: ', resupply_count_USO2)
+                print('Resupply difference USO2', resupply_diff_USO2)
+
+                before_count_USN2= end_date_consumption.newN2kg.iloc[0]
+
+                print('quantity USN2 ', resupply_quantity.newN2kg.iloc[0])
+                resupply_count_USN2 = resupply_quantity.newN2kg.iloc[0]
+                resupply_diff_USN2= resupply_count_USN2 - before_count_USN2
+                print(' resupply count USN2 : ', resupply_count_USN2)
+                print('Resupply difference USN2', resupply_diff_USN2)
+
+                
+            
+            difference_consumption = start_date_consumption.newO2kg.iloc[0] - end_date_consumption.newO2kg.iloc[-1] 
+            difference_consumption_USN2 = start_date_consumption.newN2kg.iloc[0]  - end_date_consumption.newN2kg.iloc[-1]
+
+            print('DATES: ', start_date_consumption, end_date_consumption)
+            print('DIFFERENCE between dates: ', difference_consumption)
+            ratesO2 = 2.5
+            ratesN2 = 0.487649
+                
+            difference_in_days = (end_date_consumption.datedim.iloc[-1]) - (start_date_consumption.datedim.iloc[0])
+            print('Difference in Days: ', (end_date_consumption.datedim.iloc[-1]), ' : ', (start_date_consumption.datedim.iloc[0]), ' : ', difference_in_days.days, ' Days')
+            calculated_consumption = (((difference_consumption + (2.68 * difference_in_days.days)) / difference_in_days.days) / 3)
+            calculated_consumption_USN2 = (difference_consumption_USN2 / difference_in_days.days) / difference_in_days.days
+            print('Calculated Consumption Rate: ', calculated_consumption)
+            print('Here is the current Rate: ', ratesO2)
+            print('Calculated Consumption Rate USN2: ', calculated_consumption_USN2)
+            print('Here is the current Rate: ', ratesN2)
+            percent_difference = ((calculated_consumption - ratesO2) * 100) / ratesO2 
+            percent_difference_USN2 = ((calculated_consumption_USN2 - ratesN2) * 100) / ratesN2 
+
+            print('PERCENT DIFFERENCE IN RATES: ', percent_difference)
+            print('PERCENT DIFFERENCE IN RATESUSN2: ', percent_difference_USN2)
+            date_string = str(end_date)
+
+            consumption_data = {'date': date_string, 'rate': ratesO2, 'calculated_rate_O2': calculated_consumption, 'Percent_Difference_O2': percent_difference,
+            'rateUSN2': ratesN2, 'calculated_rate_N2': calculated_consumption_USN2, 'Percent_DifferenceN2': percent_difference_USN2,
+            'Usage_O2': difference_consumption, 'Usage_N2': difference_consumption_USN2,
+            'Resupply_O2': resupply_diff_USO2, 'Resupply_N2': resupply_diff_USN2, 'Diff_in_days': difference_in_days.days}
+            
+            print('Consumption_data: ', consumption_data)
+            json_consumption_data = json.dumps(consumption_data)
+            print('percent difference json: ', json_consumption_data)
+            return json_consumption_data

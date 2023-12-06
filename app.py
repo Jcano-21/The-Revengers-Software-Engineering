@@ -14,6 +14,9 @@ from crews_query import getCrewCounts
 import sqlalchemy as sa
 import pymysql
 from modal import request_modal_update
+from modal import request_modal_update_RSWater
+from modal import request_modal_update_USWater
+from modal import request_modal_update_Gas
 
 app = Flask(__name__)
 
@@ -360,6 +363,31 @@ def makePredictions():
             [dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
 
         print(df_Inventory)
+
+        start_date = '2022-01-01'
+        end_date_Flights = '2025-12-22'
+
+        categoryFlights = 'ACY Inserts'
+
+        dataFlights = {}
+
+        dataFlights[f'start_date'] = start_date
+        dataFlights[f'end_date'] = end_date_Flights
+        dataFlights[f'category'] = categoryFlights
+
+        flight = flights()
+        getFlights(flight, dataFlights)
+        df_flight_plan = flight.get_flights_for_date_range(
+        dataFlights['start_date'], dataFlights['end_date'])
+
+        model = request_modal_update(
+            df_Inventory, df_flight_plan, df_resupply_quantities)
+        # request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+        print(df_resupply_quantities)
+        print('Model: ', model)
+        model_json = model.to_json(orient='table')
+        print('predictions json: ', model_json)
+    
     elif data == 'RS-Water':
         
         start_date = '2022-01-01'
@@ -428,48 +456,323 @@ def makePredictions():
         dfOne = RSWater.get_resupply_data()
         dfTwo = USWater.get_resupply_data()
         dfThree = Gases.get_resupply_data()
+        resupply = dfOne
         df_resupply_quantities = pd.concat(
             [dfOne, dfTwo, dfThree], ignore_index=True)
 
-        rwWater, dfOne = RSWater.get_RSWater_for_date_range(
-            dataOne['start_date'], dataOne['end_date'], dataOne['category'])
-        usWater, dfTwo = USWater.get_USWater_for_date_range(
-            dataTwo['start_date'], dataTwo['end_date'], dataTwo['category'])
-        gases, dfThree = Gases.get_Gas_for_date_range(
-            dataThree['start_date'], dataThree['end_date'], dataThree['category'])
+        dfOne = RSWater.get_RSWater_for_date_range(
+            dataOne['start_date'], dataOne['end_date'])
+        dfTwo = USWater.get_USWater_for_date_range(
+            dataTwo['start_date'], dataTwo['end_date'])
+        dfThree = Gases.get_Gas_for_date_range(
+            dataThree['start_date'], dataThree['end_date'])
        
         dfOne['Category'] = categoryOne
         dfTwo['Category'] = categoryTwo
         dfThree['Category'] = categoryThree
         
+        # Assuming 'datedim' is your common column
+        # Assuming 'datedim' is your common column
+        all_dates = pd.concat([dfOne['datedim'], dfTwo['datedim'], dfThree['datedim']]).unique()
 
-        df_WaterAndGases = pd.concat(
+        # Create empty dataframe with all_dates
+        df_combined = pd.DataFrame({'datedim': all_dates})
+
+        # Merge dataframes using outer join
+        df_combined = pd.merge(df_combined, dfOne, on='datedim', how='outer', suffixes=('', '_dfOne'))
+        df_combined = pd.merge(df_combined, dfTwo, on='datedim', how='outer', suffixes=('', '_dfTwo'))
+        df_combined = pd.merge(df_combined, dfThree, on='datedim', how='outer', suffixes=('', '_dfThree'))
+
+        # Fill NaN values with 0
+        df_combined = df_combined.fillna(0)
+
+        print('Combined DataFrame:')
+        print(df_combined)
+        print('df 1: ', dfOne, 'df 2 : ', dfTwo, 'df 3: ', dfThree)
+        print('Dataframe water and gases: ', df_combined)
+
+        start_date = '2022-01-01'
+        end_date_Flights = '2025-12-22'
+
+        categoryFlights = 'ACY Inserts'
+
+        dataFlights = {}
+
+        dataFlights[f'start_date'] = start_date
+        dataFlights[f'end_date'] = end_date_Flights
+        dataFlights[f'category'] = categoryFlights
+
+        flight = flights()
+        getFlights(flight, dataFlights)
+        df_flight_plan = flight.get_flights_for_date_range(
+            dataFlights['start_date'], dataFlights['end_date'])
+
+        model = request_modal_update_RSWater(
+            dfOne, df_flight_plan, resupply)
+        # request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+        print(df_resupply_quantities)
+        print('Model: ', model)
+        model_json = model.to_json(orient='table')
+        #print('predictions json: ', model_json)
+
+    elif data == 'US-Water':
+        
+        start_date = '2022-01-01'
+        end_date = '2023-09-05'
+
+        categoryOne = 'RS-Water'
+        categoryTwo = 'US-Water'
+        categoryThree = 'Gases'
+        
+
+        dataOne = {}
+        dataTwo = {}
+        dataThree = {}
+
+
+        dataOne[f'start_date'] = start_date
+        dataOne[f'end_date'] = end_date
+        dataOne[f'category'] = categoryOne
+
+        dataTwo[f'start_date'] = start_date
+        dataTwo[f'end_date'] = end_date
+        dataTwo[f'category'] = categoryTwo
+
+        dataThree[f'start_date'] = start_date
+        dataThree[f'end_date'] = end_date
+        dataThree[f'category'] = categoryThree
+
+        
+        RSWater = waterAndGases(categoryOne)
+        USWater = waterAndGases(categoryTwo)
+        Gases = waterAndGases(categoryThree)
+        
+        getWaterAndGas(RSWater, dataOne)
+        getWaterAndGas(USWater, dataTwo)
+        getWaterAndGas(Gases, dataThree)
+        
+        flight = flights()
+        flights_data = getFlights(flight, dataOne)
+        flightPlan = flight.get_flight_data()
+        # Create an instance of the Consumables class
+        RSWater.load_flights_data(flightPlan)
+        USWater.load_flights_data(flightPlan)
+        Gases.load_flights_data(flightPlan)
+        
+        get_resupply_dates(RSWater, dataOne)
+        get_resupply_dates(USWater, dataTwo)
+        get_resupply_dates(Gases, dataThree)
+        
+        dataRSWater = RSWater.get_rswater_data()
+        resupply_dates = RSWater.find_resupply_datesRS(dataRSWater)
+        resupplyOne, periods = RSWater.calulateResupplyRS(resupply_dates)
+
+        dataUSWater = USWater.get_uswater_data()
+        resupply_dates = USWater.find_resupply_datesUS(dataUSWater)
+        resupplyTwo, periods = USWater.calulateResupplyUS(resupply_dates)
+
+        dataGases = Gases.get_gases_data()
+        resupply_dates = Gases.find_resupply_datesGAS(dataGases)
+        resupplyThree, periods = Gases.calulateResupplyGas(resupply_dates)
+
+        print('Resupply RSWater: ', resupplyOne)
+        print('Resupply USWater: ', resupplyTwo)
+        print('Resupply Gases: ', resupplyThree)
+  
+
+        dfOne = RSWater.get_resupply_data()
+        dfTwo = USWater.get_resupply_data()
+        dfThree = Gases.get_resupply_data()
+        resupply = dfTwo        
+        df_resupply_quantities = pd.concat(
             [dfOne, dfTwo, dfThree], ignore_index=True)
 
-    start_date = '2022-01-01'
-    end_date_Flights = '2025-12-22'
+        dfOne = RSWater.get_RSWater_for_date_range(
+            dataOne['start_date'], dataOne['end_date'])
+        dfTwo = USWater.get_USWater_for_date_range(
+            dataTwo['start_date'], dataTwo['end_date'])
+        dfThree = Gases.get_Gas_for_date_range(
+            dataThree['start_date'], dataThree['end_date'])
+       
+        dfOne['Category'] = categoryOne
+        dfTwo['Category'] = categoryTwo
+        dfThree['Category'] = categoryThree
+        
+        # Assuming 'datedim' is your common column
+        # Assuming 'datedim' is your common column
+        all_dates = pd.concat([dfOne['datedim'], dfTwo['datedim'], dfThree['datedim']]).unique()
 
-    categoryFlights = 'ACY Inserts'
+        # Create empty dataframe with all_dates
+        df_combined = pd.DataFrame({'datedim': all_dates})
 
-    dataFlights = {}
+        # Merge dataframes using outer join
+        df_combined = pd.merge(df_combined, dfOne, on='datedim', how='outer', suffixes=('', '_dfOne'))
+        df_combined = pd.merge(df_combined, dfTwo, on='datedim', how='outer', suffixes=('', '_dfTwo'))
+        df_combined = pd.merge(df_combined, dfThree, on='datedim', how='outer', suffixes=('', '_dfThree'))
 
-    dataFlights[f'start_date'] = start_date
-    dataFlights[f'end_date'] = end_date_Flights
-    dataFlights[f'category'] = categoryFlights
+        # Fill NaN values with 0
+        df_combined = df_combined.fillna(0)
 
-    flight = flights()
-    getFlights(flight, dataFlights)
-    df_flight_plan = flight.get_flights_for_date_range(
-        dataFlights['start_date'], dataFlights['end_date'])
+        print('Combined DataFrame:')
+        print(df_combined)
+        print('df 1: ', dfOne, 'df 2 : ', dfTwo, 'df 3: ', dfThree)
+        print('Dataframe water and gases: ', df_combined)
 
-    model = request_modal_update(
-        df_Inventory, df_flight_plan, df_resupply_quantities)
-    # request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
-    print(df_resupply_quantities)
-    print('Model: ', model)
-    model_json = model.to_json(orient='table')
-    print('predictions json: ', model_json)
+        start_date = '2022-01-01'
+        end_date_Flights = '2025-12-22'
+
+        categoryFlights = 'ACY Inserts'
+
+        dataFlights = {}
+
+        dataFlights[f'start_date'] = start_date
+        dataFlights[f'end_date'] = end_date_Flights
+        dataFlights[f'category'] = categoryFlights
+
+        flight = flights()
+        getFlights(flight, dataFlights)
+        df_flight_plan = flight.get_flights_for_date_range(
+            dataFlights['start_date'], dataFlights['end_date'])
+
+        model = request_modal_update_USWater(
+            dfTwo, df_flight_plan, resupply)
+        # request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+        print(df_resupply_quantities)
+        print('Model: ', model)
+        model_json = model.to_json(orient='table')
+        #print('predictions json: ', model_json)
+
+    elif data == 'Gases':
+        
+        start_date = '2022-01-01'
+        end_date = '2023-09-05'
+
+        categoryOne = 'RS-Water'
+        categoryTwo = 'US-Water'
+        categoryThree = 'Gases'
+        
+
+        dataOne = {}
+        dataTwo = {}
+        dataThree = {}
+
+
+        dataOne[f'start_date'] = start_date
+        dataOne[f'end_date'] = end_date
+        dataOne[f'category'] = categoryOne
+
+        dataTwo[f'start_date'] = start_date
+        dataTwo[f'end_date'] = end_date
+        dataTwo[f'category'] = categoryTwo
+
+        dataThree[f'start_date'] = start_date
+        dataThree[f'end_date'] = end_date
+        dataThree[f'category'] = categoryThree
+
+        
+        RSWater = waterAndGases(categoryOne)
+        USWater = waterAndGases(categoryTwo)
+        Gases = waterAndGases(categoryThree)
+        
+        getWaterAndGas(RSWater, dataOne)
+        getWaterAndGas(USWater, dataTwo)
+        getWaterAndGas(Gases, dataThree)
+        
+        flight = flights()
+        flights_data = getFlights(flight, dataOne)
+        flightPlan = flight.get_flight_data()
+        # Create an instance of the Consumables class
+        RSWater.load_flights_data(flightPlan)
+        USWater.load_flights_data(flightPlan)
+        Gases.load_flights_data(flightPlan)
+        
+        get_resupply_dates(RSWater, dataOne)
+        get_resupply_dates(USWater, dataTwo)
+        get_resupply_dates(Gases, dataThree)
+        
+        dataRSWater = RSWater.get_rswater_data()
+        resupply_dates = RSWater.find_resupply_datesRS(dataRSWater)
+        resupplyOne, periods = RSWater.calulateResupplyRS(resupply_dates)
+
+        dataUSWater = USWater.get_uswater_data()
+        resupply_dates = USWater.find_resupply_datesUS(dataUSWater)
+        resupplyTwo, periods = USWater.calulateResupplyUS(resupply_dates)
+
+        dataGases = Gases.get_gases_data()
+        resupply_dates = Gases.find_resupply_datesGAS(dataGases)
+        resupplyThree, periods = Gases.calulateResupplyGas(resupply_dates)
+
+        print('Resupply RSWater: ', resupplyOne)
+        print('Resupply USWater: ', resupplyTwo)
+        print('Resupply Gases: ', resupplyThree)
+  
+
+        dfOne = RSWater.get_resupply_data()
+        dfTwo = USWater.get_resupply_data()
+        dfThree = Gases.get_resupply_data()
+        resupply = dfThree        
+        df_resupply_quantities = pd.concat(
+            [dfOne, dfTwo, dfThree], ignore_index=True)
+
+        dfOne = RSWater.get_RSWater_for_date_range(
+            dataOne['start_date'], dataOne['end_date'])
+        dfTwo = USWater.get_USWater_for_date_range(
+            dataTwo['start_date'], dataTwo['end_date'])
+        dfThree = Gases.get_Gas_for_date_range(
+            dataThree['start_date'], dataThree['end_date'])
+       
+        dfOne['Category'] = categoryOne
+        dfTwo['Category'] = categoryTwo
+        dfThree['Category'] = categoryThree
+        
+        # Assuming 'datedim' is your common column
+        # Assuming 'datedim' is your common column
+        all_dates = pd.concat([dfOne['datedim'], dfTwo['datedim'], dfThree['datedim']]).unique()
+
+        # Create empty dataframe with all_dates
+        df_combined = pd.DataFrame({'datedim': all_dates})
+
+        # Merge dataframes using outer join
+        df_combined = pd.merge(df_combined, dfOne, on='datedim', how='outer', suffixes=('', '_dfOne'))
+        df_combined = pd.merge(df_combined, dfTwo, on='datedim', how='outer', suffixes=('', '_dfTwo'))
+        df_combined = pd.merge(df_combined, dfThree, on='datedim', how='outer', suffixes=('', '_dfThree'))
+
+        # Fill NaN values with 0
+        df_combined = df_combined.fillna(0)
+
+        print('Combined DataFrame:')
+        print(df_combined)
+        print('df 1: ', dfOne, 'df 2 : ', dfTwo, 'df 3: ', dfThree)
+        print('Dataframe water and gases: ', df_combined)
+
+        start_date = '2022-01-01'
+        end_date_Flights = '2025-12-22'
+
+        categoryFlights = 'ACY Inserts'
+
+        dataFlights = {}
+
+        dataFlights[f'start_date'] = start_date
+        dataFlights[f'end_date'] = end_date_Flights
+        dataFlights[f'category'] = categoryFlights
+
+        flight = flights()
+        getFlights(flight, dataFlights)
+        df_flight_plan = flight.get_flights_for_date_range(
+            dataFlights['start_date'], dataFlights['end_date'])
+
+        model = request_modal_update_Gas(
+            dfThree, df_flight_plan, resupply)
+        # request_modal_LR_update(df_Inventory, df_flight_plan, df_resupply_quantities)
+        print(df_resupply_quantities)
+        print('Model: ', model)
+        model_json = model.to_json(orient='table')
+        #print('predictions json: ', model_json)
+    
     return jsonify(model_json)
+
+
+
 
 
 if __name__ == "__main__":

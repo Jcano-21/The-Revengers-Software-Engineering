@@ -1279,7 +1279,147 @@ function startPredictions(data, itemRate, div) {
 
                     Plotly.newPlot('tester', data, layout);
                 }
-    
+
+                else if (data == 'RS-Water')  {
+                
+                     
+                    // Extract data for plotting
+                    const dates = result.data.map(entry => entry.index.split('T')[0]);
+                    const potable = result.data.map(entry => entry.remaining_potableL);
+                    const technical = result.data.map(entry => entry.technicalL);
+                    const rodnik = result.data.map(entry => entry.rodnik_potableL);
+                    
+
+                    
+                    // Create a Plotly plot using the extracted data
+                    const data = [
+                        
+                        {
+                            x: dates,
+                            y:  potable,
+                            type: 'scatter',
+                            name: 'Potbale',
+                        },
+
+                        {
+                            x: dates,
+                            y:  technical,
+                            type: 'scatter',
+                            name: 'Technical',
+                        },
+
+                        
+
+                        {
+                            x: dates,
+                            y:  rodnik,
+                            type: 'scatter',
+                            name: 'Rodnik',
+                        },
+
+
+                    ];
+
+                    const layout = {
+                        xaxis: {
+                            title: 'Date',
+                        },
+                        yaxis: {
+                            title: 'Count',
+                        },
+                        margin: { t: 20 },
+                    }; 
+
+                    Plotly.newPlot('tester', data, layout);
+                }
+
+                else if (data == 'US-Water')  {
+                
+                     
+                    // Extract data for plotting
+                    const dates = result.data.map(entry => entry.index.split('T')[0]);
+                    const potable = result.data.map(entry => entry.corrected_potableL);
+                    const technical = result.data.map(entry => entry.corrected_technicalL);
+                    
+
+                    
+                    // Create a Plotly plot using the extracted data
+                    const data = [
+                        
+                        {
+                            x: dates,
+                            y:  potable,
+                            type: 'scatter',
+                            name: 'Potbale',
+                        },
+
+                        {
+                            x: dates,
+                            y:  technical,
+                            type: 'scatter',
+                            name: 'Technical',
+                        },
+
+
+
+                    ];
+
+                    const layout = {
+                        xaxis: {
+                            title: 'Date',
+                        },
+                        yaxis: {
+                            title: 'Count',
+                        },
+                        margin: { t: 20 },
+                    }; 
+
+                    Plotly.newPlot('tester', data, layout);
+                }
+                
+                else if (data == 'Gases')  {
+                
+                     
+                    // Extract data for plotting
+                    const dates = result.data.map(entry => entry.index.split('T')[0]);
+                    const o2 = result.data.map(entry => entry.newO2kg);
+                    const n2 = result.data.map(entry => entry.newN2kg);
+                    
+
+                    
+                    // Create a Plotly plot using the extracted data
+                    const data = [
+                        
+                        {
+                            x: dates,
+                            y:  o2,
+                            type: 'scatter',
+                            name: 'O2',
+                        },
+
+                        {
+                            x: dates,
+                            y:  n2,
+                            type: 'scatter',
+                            name: 'N2',
+                        },
+
+
+
+                    ];
+
+                    const layout = {
+                        xaxis: {
+                            title: 'Date',
+                        },
+                        yaxis: {
+                            title: 'Count',
+                        },
+                        margin: { t: 20 },
+                    }; 
+
+                    Plotly.newPlot('tester', data, layout);
+                }
                     
 
                                         

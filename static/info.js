@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
         consumptionButton.disabled = true;
         makePredictionsButton.disabled = true;
 
-        if (itemSelectionButton.textContent == 'All'){ // Prevent the default form submission
+        if (itemSelectionButton.textContent == 'All' || itemSelectionButton.textContent == 'RS-Water'|| itemSelectionButton.textContent == 'US-Water' || itemSelectionButton.textContent == 'Gases'){ // Prevent the default form submission
             const categoryValue = itemSelectionButton.textContent;
             startPredictions(categoryValue, itemRate, div);
             
