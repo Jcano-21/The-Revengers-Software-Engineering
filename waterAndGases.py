@@ -6,9 +6,9 @@ class waterAndGases:
 
     def __init__(self, category):
         self._category_data = {}
-        self._RSWater_data = {}  # Private attribute
-        self._USWater_data = {}  # Private attribute
-        self._Gas_data = {}  # Private attribute
+        self._RSWater_data = {}  
+        self._USWater_data = {}  
+        self._Gas_data = {}  
         self.flights = {}
         self._resupply_dates = {}
         self._category = category

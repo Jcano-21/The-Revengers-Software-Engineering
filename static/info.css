@@ -89,6 +89,8 @@ body{
     text-align: center;
 }
 
+
+
 .info_button_press{
     width: 265px;
     height: 60px;
@@ -105,7 +107,7 @@ body{
     text-align: center;
 }
 
-#graph_box{
+#graph_box {
     width: 900px;
     height: 700px;
     border: whitesmoke solid 2px;
@@ -113,7 +115,43 @@ body{
     left: 700px;
     top: 0px;
     background-color: whitesmoke;
-}
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .newContainer {
+    width: 900px;
+    height: 450;
+    border: whitesmoke solid 2px;
+    position: absolute;
+    left: 700px;
+    top: 450px;
+    background-color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  
+  .alert {
+    width: 99%;
+    height: 50px;
+    overflow: auto;
+    background-color: #DFE6E9;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    border-radius: 15px;
+    border: 5px solid #636E72;
+    box-shadow: 0px 4px 4px 0px #00000040 inset, 0px 4px 4px 0px #00000040;
+    font-family: Helvetica;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 50px;
+    letter-spacing: 0em;
+    text-align: center;
+  }
+  
 
 .choices{
     width: 100%;

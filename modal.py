@@ -5,8 +5,10 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
+from tensorflow.keras.layers import SimpleRNN, Dense
 from tensorflow.keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
+import datetime
 
 import os
 
@@ -36,7 +38,7 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
 
     # Prepare data for training
     X, y = [], []
-    look_back = 7  # Adjust this based on your data and prediction needs
+    look_back = 7  
 
     for i in range(len(normalized_data) - look_back):
         X.append(normalized_data[i:i+look_back])
@@ -143,7 +145,7 @@ def request_modal_update_RSWater(data_inventory, data_resupply, data_averages):
 
     # Prepare data for training
     X, y = [], []
-    look_back = 7  # Adjust this based on your data and prediction needs
+    look_back = 4
 
     for i in range(len(normalized_data) - look_back):
         X.append(normalized_data[i:i+look_back])
@@ -157,7 +159,7 @@ def request_modal_update_RSWater(data_inventory, data_resupply, data_averages):
 
     # Build the LSTM model
     model = Sequential()
-    model.add(LSTM(units=50, input_shape=(X_train.shape[1], X_train.shape[2])))
+    model.add(SimpleRNN(units=100, input_shape=(X_train.shape[1], X_train.shape[2])))
     model.add(Dense(units=len(data.columns)))
     model.compile(optimizer='adam', loss='mean_squared_error')
 
@@ -166,7 +168,7 @@ def request_modal_update_RSWater(data_inventory, data_resupply, data_averages):
         monitor='val_loss', patience=10, restore_best_weights=True)
 
     # Train the model
-    history = model.fit(X_train, y_train, epochs=50, batch_size=30, validation_data=(
+    history = model.fit(X_train, y_train, epochs=10, batch_size=8, validation_data=(
         X_test, y_test), callbacks=[early_stopping], verbose=1)
 
     # Simulate future resupplies
@@ -201,8 +203,11 @@ def request_modal_update_RSWater(data_inventory, data_resupply, data_averages):
             for i in range(future_index, len(data)):
                 data[column].iloc[i] -= (rate_avg[column] * 7)
 
-    # Predict future quantities
-    future_dates_predict = pd.date_range(start='2023-09-06', end='2025-12-22')
+    # Set the frequency to 7 days
+    weekly_frequency = datetime.timedelta(days=7)
+
+# Predict future quantities on a weekly basis
+    future_dates_predict = pd.date_range(start='2023-09-06', end='2025-12-22', freq=weekly_frequency)
     # Use the last known values as a starting point
     future_data = normalized_data[-look_back:]
 
@@ -261,7 +266,7 @@ def request_modal_update_USWater(data_inventory, data_resupply, data_averages):
 
     # Prepare data for training
     X, y = [], []
-    look_back = 7  # Adjust this based on your data and prediction needs
+    look_back = 7  
 
     for i in range(len(normalized_data) - look_back):
         X.append(normalized_data[i:i+look_back])
@@ -384,7 +389,7 @@ def request_modal_update_Gas(data_inventory, data_resupply, data_averages):
 
     # Prepare data for training
     X, y = [], []
-    look_back = 7  # Adjust this based on your data and prediction needs
+    look_back = 7  
 
     for i in range(len(normalized_data) - look_back):
         X.append(normalized_data[i:i+look_back])

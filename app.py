@@ -225,7 +225,7 @@ def makePredictions():
 
     data = request.get_json()  # Extract JSON data from the request
 
-    if data == 'All':
+    if data == 'Inventory':
         start_date = '2022-01-01'
         end_date = '2023-09-05'
 
@@ -386,7 +386,17 @@ def makePredictions():
         print(df_resupply_quantities)
         print('Model: ', model)
         model_json = model.to_json(orient='table')
+        # resupplyOne_json = resupplyOne.to_json(orient='table')
+        # resupplyTwo_json = resupplyTwo.to_json(orient='table')
+        # resupplyThree_json = resupplyThree.to_json(orient='table')
+        # resupplyFour_json = resupplyFour.to_json(orient='table')
+        # resupplyFive_json = resupplyFive.to_json(orient='table')
+        # resupplySix_json = resupplySix.to_json(orient='table')
+
+
         print('predictions json: ', model_json)
+        return jsonify(model_json, resupplyOne, resupplyTwo, resupplyThree, resupplyFour, resupplyFive, resupplySix)
+
     
     elif data == 'RS-Water':
         
@@ -514,6 +524,8 @@ def makePredictions():
         print('Model: ', model)
         model_json = model.to_json(orient='table')
         #print('predictions json: ', model_json)
+        return jsonify(model_json)
+
 
     elif data == 'US-Water':
         
@@ -641,6 +653,8 @@ def makePredictions():
         print('Model: ', model)
         model_json = model.to_json(orient='table')
         #print('predictions json: ', model_json)
+        return jsonify(model_json)
+
 
     elif data == 'Gases':
         
@@ -768,8 +782,9 @@ def makePredictions():
         print('Model: ', model)
         model_json = model.to_json(orient='table')
         #print('predictions json: ', model_json)
+        return jsonify(model_json)
+
     
-    return jsonify(model_json)
 
 
 

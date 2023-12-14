@@ -82,11 +82,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const startDateValue = startDateInput.value;
         const endDateValue = endDateInput.value;
         const categoryValue = itemSelectionButton.textContent;
+        
+        //disable buttons while fetching
         submitButton.disabled = true;
         consumptionButton.disabled = true;
         makePredictionsButton.disabled = true;
 
+        //Remove Prediction Elements
+        elementToRemove = document.getElementById("container");
 
+        // Check if the element exists before trying to remove it
+        if (elementToRemove) {
+            // Remove the element
+            elementToRemove.remove();
+        }
+
+        
+        //selection validation
         if (startDateValue >= endDateValue) {
             alert("Start date must be before the end date and not the same day.");
             submitButton.disabled = false;
@@ -104,15 +116,26 @@ document.addEventListener("DOMContentLoaded", function () {
         captureInputValues(data, itemRate, div);
     });
 
-    // Add a click event listener to the "Submit" button
+    // Click event listener for consumption
     consumptionButton.addEventListener("click", function (event) {
 
+        //disable buttons while fetching
         submitButton.disabled = true;
         consumptionButton.disabled = true;
         makePredictionsButton.disabled = true;
 
+        //Remove Prediction Elements
+        elementToRemove = document.getElementById("container");
+
+        // Check if the element exists before trying to remove it
+        if (elementToRemove) {
+            // Remove the element
+            elementToRemove.remove();
+        }
+
         
-        if (itemSelectionButton.textContent !== 'Select Item' && itemSelectionButton.textContent !== 'All'){ // Prevent the default form submission
+
+        if (itemSelectionButton.textContent !== 'Select Item' && itemSelectionButton.textContent !== 'Inventory'){ // Prevent the default form submission
             const categoryValue = itemSelectionButton.textContent;
             captureInputValuesCalc(categoryValue, itemRate, div);
         }
@@ -127,19 +150,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+    //Click event listener for predictions
     makePredictionsButton.addEventListener("click", function (event) {
-        
+        //disable buttons while fetching
         submitButton.disabled = true;
         consumptionButton.disabled = true;
         makePredictionsButton.disabled = true;
 
-        if (itemSelectionButton.textContent == 'All' || itemSelectionButton.textContent == 'RS-Water'|| itemSelectionButton.textContent == 'US-Water' || itemSelectionButton.textContent == 'Gases'){ // Prevent the default form submission
+        //Remove Prediction Elements
+         elementToRemove = document.getElementById("container");
+
+        // Check if the element exists before trying to remove it
+        if (elementToRemove) {
+            // Remove the element
+            elementToRemove.remove();
+        }
+
+        
+
+        //selection validation
+        if (itemSelectionButton.textContent == 'Inventory' || itemSelectionButton.textContent == 'RS-Water'|| itemSelectionButton.textContent == 'US-Water' || itemSelectionButton.textContent == 'Gases'){ 
             const categoryValue = itemSelectionButton.textContent;
             startPredictions(categoryValue, itemRate, div);
             
         }
         else {
-            window.alert("Please select All for predictions.")
+            window.alert("Please select Inventory, RS-Water, US-Water, or Gases for predictions.")
             submitButton.disabled = false;
             consumptionButton.disabled = false;
             makePredictionsButton.disabled = false;
