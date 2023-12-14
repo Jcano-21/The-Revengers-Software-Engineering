@@ -299,45 +299,8 @@ def makePredictions():
         get_resupply_dates(KTO, dataFive)
         get_resupply_dates(PretreatTanks, dataSix)
 
-        dataACY = ACY.get_category_data()
-        resupply_dates = ACY.find_resupply_dates(dataACY)
-        resupplyOne, periods = ACY.calulateResupply(resupply_dates)
 
-        dataFilterInserts = FilterInserts.get_category_data()
-        resupply_dates = FilterInserts.find_resupply_dates(dataFilterInserts)
-        resupplyTwo, periods = FilterInserts.calulateResupply(resupply_dates)
-
-        dataFoodRS = FoodRS.get_category_data()
-        resupply_dates = FoodRS.find_resupply_dates(dataFoodRS)
-        resupplyThree, periods = FoodRS.calulateResupply(resupply_dates)
-
-        dataFoodUS = FoodUS.get_category_data()
-        resupply_dates = FoodUS.find_resupply_dates(dataFoodUS)
-        resupplyFour, periods = FoodUS.calulateResupply(resupply_dates)
-
-        dataKTO = KTO.get_category_data()
-        resupply_dates = KTO.find_resupply_dates(dataKTO)
-        resupplyFive, periods = KTO.calulateResupply(resupply_dates)
-
-        dataPretreatTanks = PretreatTanks.get_category_data()
-        resupply_dates = PretreatTanks.find_resupply_dates(dataPretreatTanks)
-        resupplySix, periods = PretreatTanks.calulateResupply(resupply_dates)
-
-        print('Resupply ACY: ', resupplyOne)
-        print('Resupply Filter Inserts: ', resupplyTwo)
-        print('Resupply Food-RS: ', resupplyThree)
-        print('Resupply Food-US: ', resupplyFour)
-        print('Resupply KTO: ', resupplyFive)
-        print('Resupply Pretreat Tanks: ', resupplySix)
-
-        dfOne = ACY.get_resupply_data()
-        dfTwo = FilterInserts.get_resupply_data()
-        dfThree = FoodRS.get_resupply_data()
-        dfFour = FoodUS.get_resupply_data()
-        dfFive = KTO.get_resupply_data()
-        dfSix = PretreatTanks.get_resupply_data()
-        df_resupply_quantities = pd.concat(
-            [dfOne, dfTwo, dfThree, dfFour, dfFive, dfSix], ignore_index=True)
+        
 
         rsOne, usOne, dfOne = ACY.get_consumables_for_date_range(
             dataOne['start_date'], dataOne['end_date'], dataOne['category'])
@@ -351,6 +314,46 @@ def makePredictions():
             dataFive['start_date'], dataFive['end_date'], dataFive['category'])
         rsSix, usSix, dfSix = PretreatTanks.get_consumables_for_date_range(
             dataSix['start_date'], dataSix['end_date'], dataSix['category'])
+        
+        dataACY = ACY.get_category_data()
+        resupply_dates = ACY.find_resupply_dates(dfOne)
+        resupplyOne, periods = ACY.calulateResupply(resupply_dates)
+
+        dataFilterInserts = FilterInserts.get_category_data()
+        resupply_dates = FilterInserts.find_resupply_dates(dfTwo)
+        resupplyTwo, periods = FilterInserts.calulateResupply(resupply_dates)
+
+        dataFoodRS = FoodRS.get_category_data()
+        resupply_dates = FoodRS.find_resupply_dates(dfThree)
+        resupplyThree, periods = FoodRS.calulateResupply(resupply_dates)
+
+        dataFoodUS = FoodUS.get_category_data()
+        resupply_dates = FoodUS.find_resupply_dates(dfFour)
+        resupplyFour, periods = FoodUS.calulateResupply(resupply_dates)
+
+        dataKTO = KTO.get_category_data()
+        resupply_dates = KTO.find_resupply_dates(dfFive)
+        resupplyFive, periods = KTO.calulateResupply(resupply_dates)
+
+        dataPretreatTanks = PretreatTanks.get_category_data()
+        resupply_dates = PretreatTanks.find_resupply_dates(dfSix)
+        resupplySix, periods = PretreatTanks.calulateResupply(resupply_dates)
+
+        dfOneCalc = ACY.get_resupply_data()
+        dfTwoCalc = FilterInserts.get_resupply_data()
+        dfThreeCalc = FoodRS.get_resupply_data()
+        dfFourCalc = FoodUS.get_resupply_data()
+        dfFiveCalc = KTO.get_resupply_data()
+        dfSixCalc = PretreatTanks.get_resupply_data()
+        df_resupply_quantities = pd.concat(
+            [dfOneCalc, dfTwoCalc, dfThreeCalc, dfFourCalc, dfFiveCalc, dfSixCalc], ignore_index=True)
+
+        print('Resupply ACY: ', resupplyOne)
+        print('Resupply Filter Inserts: ', resupplyTwo)
+        print('Resupply Food-RS: ', resupplyThree)
+        print('Resupply Food-US: ', resupplyFour)
+        print('Resupply KTO: ', resupplyFive)
+        print('Resupply Pretreat Tanks: ', resupplySix)
 
         dfOne['Category'] = categoryOne
         dfTwo['Category'] = categoryTwo

@@ -231,7 +231,7 @@ class Consumables:
 
 
         print('printing resupply!: ', resupply_dates)
-        category_data = self._resupply_dates
+        #category_data = self._resupply_dates
         category_data_list = []
         countL = 0
         for index, row in resupply_dates.iterrows(): 
@@ -339,7 +339,7 @@ class Consumables:
         return(df)
     
     def find_resupply_dates(self, df):
-        
+        print('data: ', df)
         #capture first date from from inventory dataframe
         startDate = df['datedim'][0]
         #get resupply vehicle dock dates
@@ -356,7 +356,9 @@ class Consumables:
                 for j, flight_row in flights.iterrows():
                     category_date = row['datedim']
 
-                    print('debug print: ', category_date)
+                    #print('debug print: ', category_date)
+                    #print('Checking count',row['distinct_id_count_categories'])
+                    #print('checking count', df['distinct_id_count_categories'][i + 1])
                     flight_date = flight_row['datedim']
                     #get difference in days of flight date and inventory date
                     difference_in_days = (flight_date) - (category_date)
@@ -371,8 +373,8 @@ class Consumables:
                         print('difference in days: ', difference_in_days.days)
                         #set resupply as new date
                         resupply = row['datedim']
-                        print('resupply date: ', resupply)
-                        #creat dummy list and add resupply
+                        #print('resupply date: ', resupply)
+                        #create dummy list and add resupply
                         dummyList = [resupply]
                         break;
             print('length: ', len(df), 'iteration: ', i + 1)
