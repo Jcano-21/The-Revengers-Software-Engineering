@@ -97,6 +97,18 @@ document.addEventListener("DOMContentLoaded", function () {
             elementToRemove.remove();
         }
 
+        divToRemove = document.getElementById("alertTen")
+
+        if (divToRemove){
+            divToRemove.remove();
+        }
+
+        container = document.getElementById('info_screen');
+        container.classList.add('info_screen');
+        container.classList.remove('info_screenRESIZE');
+
+
+
         
         //selection validation
         if (startDateValue >= endDateValue) {
@@ -133,6 +145,15 @@ document.addEventListener("DOMContentLoaded", function () {
             elementToRemove.remove();
         }
 
+        divToRemove = document.getElementById("alertTen")
+
+        if (divToRemove){
+            divToRemove.remove();
+        }
+
+        container = document.getElementById('info_screen')
+        container.classList.add('info_screen');
+        container.classList.remove('info_screenRESIZE');
         
 
         if (itemSelectionButton.textContent !== 'Select Item' && itemSelectionButton.textContent !== 'Inventory'){ // Prevent the default form submission
@@ -166,8 +187,15 @@ document.addEventListener("DOMContentLoaded", function () {
             elementToRemove.remove();
         }
 
-        
+        divToRemove = document.getElementById("alertTen")
 
+        if (divToRemove){
+            divToRemove.remove();
+        }
+
+        container = document.getElementById('info_screen')
+        container.classList.add('info_screen');
+        container.classList.remove('info_screenRESIZE');
         //selection validation
         if (itemSelectionButton.textContent == 'Inventory' || itemSelectionButton.textContent == 'RS-Water'|| itemSelectionButton.textContent == 'US-Water' || itemSelectionButton.textContent == 'Gases'){ 
             const categoryValue = itemSelectionButton.textContent;

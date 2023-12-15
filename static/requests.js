@@ -1208,6 +1208,14 @@ function startPredictions(data, itemRate, div) {
                     calcFour = JSON.parse(result[4]);
                     calcFive = JSON.parse(result[5]);
                     calcSix = JSON.parse(result[6]);
+                    
+                    //thresholds
+                    aycThresh = 104;
+                    filterThresh = 8;
+                    rsfThresh = 21;
+                    usfThresh = 160;
+                    ktoThresh = 28;
+                    pretreatThresh = 5;
 
                     // Initialize an object to store the smallest values and dates
                     let smallestValues = {
@@ -1252,6 +1260,60 @@ function startPredictions(data, itemRate, div) {
                     console.log(smallestValues.data[4].value);
                     console.log(smallestValues.data[5].value);
 
+                    acySmallest = smallestValues.data[0].value;
+                    filterSmallest = smallestValues.data[1].value;
+                    rsfSmallest = smallestValues.data[2].value;
+                    usfSmallest = smallestValues.data[3].value;
+                    ktoSmallest = smallestValues.data[4].value;
+                    pretreatSmallest = smallestValues.data[5].value;
+
+                    pDiffAcy = (acySmallest * 100) / aycThresh;
+                    pDiffInsert = (filterSmallest * 100) / filterThresh;
+                    pDiffRsf = (rsfSmallest * 100) / rsfThresh;
+                    pDiffUsf = (usfSmallest * 100) / usfThresh;
+                    pDiffKto = (ktoSmallest * 100) / ktoThresh;
+                    pDiffPtreat = (pretreatSmallest * 100) / pretreatThresh;
+
+                    percentDict = {
+                        'ACY Inserts': pDiffAcy,
+                        'Filter Inserts': pDiffInsert,
+                        'Food-RS': pDiffRsf,
+                        'Food-US': pDiffUsf,
+                        'KTO': pDiffKto,
+                        'Pretreat Tanks': pDiffPtreat
+                    };
+
+                    let minCategory = null;
+                    let secondMinCategory = null;
+                    let minValue = Infinity;
+                    let secondMinValue = Infinity;
+
+                    for ( category in percentDict) {
+                        value = percentDict[category];
+
+                        if(value < minValue) {
+                            secondMinValue = minValue;
+                            secondMinCategory = minCategory;
+                            
+                            minValue = value;
+                            minCategory = category;
+                        } else if (value < secondMinValue) {
+                            secondMinValue = value;
+                            secondMinCategory = category;
+                        }
+                    }
+
+                    console.log('start percentage diff: ')
+                    console.log(pDiffAcy);
+                    console.log(pDiffInsert);
+                    console.log(pDiffRsf);
+                    console.log(pDiffUsf);
+                    console.log(pDiffKto);
+                    console.log(pDiffPtreat);
+                    console.log('DICTIONARY: ', percentDict)
+
+
+
                     date1 = new Date(smallestValues.data[0].index);
                     date2 = new Date(smallestValues.data[1].index);
                     date3 = new Date(smallestValues.data[2].index);
@@ -1273,20 +1335,20 @@ function startPredictions(data, itemRate, div) {
                     month5 = date5.getMonth() + 1;
                     month6 = date6.getMonth() + 1;
 
-                    monthDict = [month1, month2, month3, month4, month5, month6]
+                    monthDict = [month1, month2, month3, month4, month5, month6];
 
-                    Jan = 0
-                    Feb = 0
-                    Mar = 0
-                    Apr = 0
-                    May = 0
-                    Jun = 0
-                    Jul = 0
-                    Aug = 0
-                    Sep = 0
-                    Oct = 0
-                    Nov = 0
-                    Dec = 0
+                    Jan = 0;
+                    Feb = 0;
+                    Mar = 0;
+                    Apr = 0;
+                    May = 0;
+                    Jun = 0;
+                    Jul = 0;
+                    Aug = 0;
+                    Sep = 0;
+                    Oct = 0;
+                    Nov = 0;
+                    Dec = 0;
 
                     counterDict = {
                         January: 0,
@@ -1301,10 +1363,10 @@ function startPredictions(data, itemRate, div) {
                         October: 0,
                         November: 0,
                         December: 0
-                    }
-                    numDict = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                    };
+                    numDict = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
                     nameDict = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 
-                    'August', 'September', 'October', 'November', 'December']
+                    'August', 'September', 'October', 'November', 'December'];
 
                     for (let k = 0; k < numDict.length; k++) {
                         for (let i = 0; i < monthDict.length; i++){
@@ -1359,6 +1421,108 @@ function startPredictions(data, itemRate, div) {
                     console.log(month6);
 
                     newString = ''
+
+
+                    if (calcOne.USAGE_AVERAGE > calcOne.RESUPPLY_AVERAGE){
+
+                        newString = newString + "ACY Inserts Usage WARNING Usage:" + calcOne.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcOne.RESUPPLY_AVERAGE.toFixed(2);
+                        resupplyOne = calcOne.USAGE_AVERAGE;
+                    } else{
+                        resupplyOne = calcOne.RESUPPLY_AVERAGE;
+                    }
+
+                    if (calcTwo.USAGE_AVERAGE > calcTwo.RESUPPLY_AVERAGE){
+                        resupplyTwo = calcTwo.USAGE_AVERAGE;
+
+
+                        if(newString.length > 0){
+                            newString = newString + "<br>Filter Inserts Usage WARNING Usage:" + calcTwo.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcTwo.RESUPPLY_AVERAGE.toFixed(2);
+                        }
+
+                        else {
+                            newString = newString + "Filter Inserts Usage WARNING Usage:" + calcTwo.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcTwo.RESUPPLY_AVERAGE.toFixed(2);
+
+                        }
+    
+                    }
+                    else {
+                        resupplyTwo = calcTwo.RESUPPLY_AVERAGE;
+                    }
+
+                    if (calcThree.USAGE_AVERAGE > calcThree.RESUPPLY_AVERAGE){
+                        
+                        resupplyThree = calcThree.USAGE_AVERAGE;
+
+                        if(newString.length > 0){
+                            newString = newString + "<br>Food-RS Usage WARNING Usage:" + calcThree.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcThree.RESUPPLY_AVERAGE.toFixed(2);
+                        }
+    
+                        else {
+                            newString = newString + "Food-RS Usage WARNING Usage:" + calcThree.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcThree.RESUPPLY_AVERAGE.toFixed(2);
+    
+                        }
+        
+                    }
+                    else {
+                        resupplyThree = calcThree.RESUPPLY_AVERAGE;
+                    }
+
+
+                    if (calcFour.USAGE_AVERAGE > calcFour.RESUPPLY_AVERAGE){
+
+                        resupplyFour = calcFour.USAGE_AVERAGE;
+
+
+                        if(newString.length > 0){
+                            newString = newString + "<br>Food-US Usage WARNING Usage:" + calcFour.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFour.RESUPPLY_AVERAGE.toFixed(2);
+                        }
+    
+                        else {
+                            newString = newString + "Food-US Usage WARNING Usage:" + calcFour.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFour.RESUPPLY_AVERAGE.toFixed(2);
+    
+                        }    
+                    }
+
+                    else {
+                        resupplyFour = calcFour.RESUPPLY_AVERAGE;
+                    }
+
+                    if (calcFive.USAGE_AVERAGE > calcFive.RESUPPLY_AVERAGE){
+
+                        resupplyFive = calcFive.USAGE_AVERAGE;
+
+
+                        if(newString.length > 0){
+                            newString = newString + "<br>KTO Usage WARNING Usage:" + calcFive.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFive.RESUPPLY_AVERAGE.toFixed(2);
+                        }
+    
+                        else {
+                            newString = newString + "KTO Usage WARNING Usage:" + calcFive.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFive.RESUPPLY_AVERAGE.toFixed(2);
+    
+                        }    
+                    }
+                    else {
+                        resupplyFive = calcFive.RESUPPLY_AVERAGE;
+                    }
+
+                    if (calcSix.USAGE_AVERAGE > calcSix.RESUPPLY_AVERAGE){
+
+                        resupplySix = calcSix.USAGE_AVERAGE;
+
+
+                        if(newString.length > 0){
+                            newString = newString + "<br>Pretreat Tanks Usage WARNING Usage:" + calcSix.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcSix.RESUPPLY_AVERAGE.toFixed(2);
+                        }
+    
+                        else {
+                            newString = newString + "Pretreat Tanks Usage WARNING Usage:" + calcSix.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcSix.RESUPPLY_AVERAGE.toFixed(2);
+    
+                        }    
+                    }
+                    else {
+                        resupplySix = calcSix.RESUPPLY_AVERAGE;
+                    }
+
                     alertString = ''
                     const existingDiv = document.getElementById('graph_box');
                     const newContainer = document.createElement("container");
@@ -1368,7 +1532,7 @@ function startPredictions(data, itemRate, div) {
                     document.body.appendChild(newContainer);
                  
 
-                    if (smallestValues.data[0].value < 1039){
+                    if (smallestValues.data[0].value < aycThresh){
                         console.log("ALERT ACY INSERTS BELOW MINMUM THRESHOLD");
                         alertString = alertString +  "ALERT ACY INSERTS BELOW MINMUM THRESHOLD ";
 
@@ -1385,7 +1549,7 @@ function startPredictions(data, itemRate, div) {
                         newContainer.appendChild(newDivOne);
                     }
 
-                    if (smallestValues.data[1].value < 8){
+                    if (smallestValues.data[1].value < filterThresh){
                         console.log("ALERT FILTER INSERTS BELOW MINMUM THRESHOLD");
                         alertString = ''
                         alertString = alertString +  "ALERT FILTER INSERTS BELOW MINMUM THRESHOLD";                        ;
@@ -1402,7 +1566,7 @@ function startPredictions(data, itemRate, div) {
                         newContainer.appendChild(newDivTwo);
                         
                     }
-                    if (smallestValues.data[2].value < 21){
+                    if (smallestValues.data[2].value < rsfThresh){
                         console.log("ALERT RS-Food BELOW MINMUM THRESHOLD");
                         alertString = ''
                         alertString = alertString +  "ALERT RS-Food BELOW MINMUM THRESHOLD ";
@@ -1418,7 +1582,7 @@ function startPredictions(data, itemRate, div) {
                         // Insert the new div as a child of the pre-existing div
                         newContainer.appendChild(newDivThree);
                     }
-                    if (smallestValues.data[3].value < 160){
+                    if (smallestValues.data[3].value < usfThresh){
                         console.log("ALERT US-FOOD BELOW MINMUM THRESHOLD");
                         alertString = ''
                         alertString = alertString +  "ALERT US-FOOD BELOW MINMUM THRESHOLD ";                        ;
@@ -1434,7 +1598,7 @@ function startPredictions(data, itemRate, div) {
                         // Insert the new div as a child of the pre-existing div
                         newContainer.appendChild(newDivFour);
                     }
-                    if (smallestValues.data[4].value < 28){
+                    if (smallestValues.data[4].value < ktoThresh){
                         console.log("ALERT KTO BELOW MINMUM THRESHOLD");
                         alertString = ''
                         alertString = alertString +  "ALERT KTO BELOW MINMUM THRESHOLD";                        ;
@@ -1451,7 +1615,7 @@ function startPredictions(data, itemRate, div) {
                         newContainer.appendChild(newDivFive);
                         
                     }
-                    if (smallestValues.data[5].value < 5){
+                    if (smallestValues.data[5].value < pretreatThresh){
                         console.log("ALERT PRETREAT TANKS BELOW MINMUM THRESHOLD");
                         alertString = ''
                         alertString = alertString +  "ALERT PRETREAT TANKS BELOW MINMUM THRESHOLD ";                        ;
@@ -1470,87 +1634,76 @@ function startPredictions(data, itemRate, div) {
                     }
 
                     const newDivSeven = document.createElement('alertSeven');
-                        // Apply styles to the div
-                        newDivSeven.classList.add('alert');
-                        // Set the text content of the new div
-                        newDivSeven.innerHTML = monthWarning;
-                        newDivSeven.id = 'alertSeven'
+                    // Apply styles to the div
+                    newDivSeven.classList.add('alert');
+                    // Set the text content of the new div
+                    newDivSeven.innerHTML = monthWarning;
+                    newDivSeven.id = 'alertSeven'
+
+                    thresholdWarning = 'Categories most likley to incure threshold violations: ' 
+                    + minCategory + ' & ' + secondMinCategory; 
+
+                    // Insert the new div as a child of the pre-existing div
+                    newContainer.appendChild(newDivSeven);
+
+                    const newDivEight = document.createElement('alertEight');
+                    // Apply styles to the div
+                    newDivEight.classList.add('alert');
+                    // Set the text content of the new div
+                    newDivEight.innerHTML = thresholdWarning;
+                    newDivEight.id = 'alertEight'
 
 
-                        // Insert the new div as a child of the pre-existing div
-                        newContainer.appendChild(newDivSeven);
+                    // Insert the new div as a child of the pre-existing div
+                    newContainer.appendChild(newDivEight);
+
+                    const newDivNine = document.createElement('alertNine');
+                    // Apply styles to the div
+                    newDivNine.classList.add('resupply');
+
+                    resupplyString = 'Resupply Quantities: <br>ACY Insert: ' + resupplyOne.toFixed(2) + ' every ' +
+                    calcOne.DAYS_BETWEEN_RESUPPLY_AVERAGE.toFixed(2) + ' days.' +
+                    '<br>Insert Filters: ' + resupplyTwo.toFixed(2) + ' every ' +
+                    calcTwo.DAYS_BETWEEN_RESUPPLY_AVERAGE.toFixed(2) + ' days.' + '<br>Food-RS: ' + resupplyThree.toFixed(2) + ' every ' +
+                    calcThree.DAYS_BETWEEN_RESUPPLY_AVERAGE.toFixed(2) + ' days.' +
+                    '<br>Food-US: ' + resupplyFour.toFixed(2) + ' every ' +
+                    calcFour.DAYS_BETWEEN_RESUPPLY_AVERAGE.toFixed(2) + ' days.' + '<br>KTO: ' + resupplyFive.toFixed(2) + ' every ' +
+                    calcFive.DAYS_BETWEEN_RESUPPLY_AVERAGE.toFixed(2) + ' days.' + '<br>Pretreat Tanks: '
+                    + resupplySix.toFixed(2) + ' every ' +
+                    calcSix.DAYS_BETWEEN_RESUPPLY_AVERAGE.toFixed(2) + ' days.';
+                    // Set the text content of the new div
+                    newDivNine.innerHTML = resupplyString;
+                    newDivNine.id = 'alertNine'
+
+
+                    // Insert the new div as a child of the pre-existing div
+                    newContainer.appendChild(newDivNine);
+
+                    thresholdPercent = 'ACY Inserts percent from threshold: ' + percentDict['ACY Inserts'].toFixed(2) + '%'
+                    +'<br>Filter Inserts percent from threshold: ' + percentDict['Filter Inserts'].toFixed(2) + '%'
+                    +'<br>Food-RS percent from threshold: ' + percentDict['Food-RS'].toFixed(2) + '%'
+                    +'<br>Food-US percent from threshold: ' + percentDict['Food-US'].toFixed(2) + '%'
+                    +'<br>KTO percent from threshold: ' + percentDict['KTO'].toFixed(2) + '%'
+                    +'<br>Pretreat Tanks percent from threshold: ' + percentDict['Pretreat Tanks'].toFixed(2) + '%';
+                    container = document.getElementById('info_screen');
+                    container.classList.add('info_screenRESIZE');
+                    container.classList.remove('info_screen');
+                    const newDivTen = document.createElement('alertTen');
+                    // Apply styles to the div
+                    newDivTen.classList.add('resupply');
+                    // Set the text content of the new  div
+                    newDivTen.id = 'alertTen';
+
+                    // Insert the new div as a child of the pre-existing div
+                    container.appendChild(newDivTen);
+
+                    newDivTen.innerHTML = thresholdPercent;
+
 
                     
                     
 
-                    if (calcOne.USAGE_AVERAGE > calcOne.RESUPPLY_AVERAGE){
-
-                        newString = newString + "ACY Inserts Usage WARNING Usage:" + calcOne.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcOne.RESUPPLY_AVERAGE.toFixed(2);
-
-                    }
-
-                    if (calcTwo.USAGE_AVERAGE > calcTwo.RESUPPLY_AVERAGE){
-
-                        if(newString.length > 0){
-                            newString = newString + "<br>Filter Inserts Usage WARNING Usage:" + calcTwo.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcTwo.RESUPPLY_AVERAGE.toFixed(2);
-                        }
-
-                        else {
-                            newString = newString + "Filter Inserts Usage WARNING Usage:" + calcTwo.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcTwo.RESUPPLY_AVERAGE.toFixed(2);
-
-                        }
-    
-                    }
-
-                    if (calcThree.USAGE_AVERAGE > calcThree.RESUPPLY_AVERAGE){
-
-                        if(newString.length > 0){
-                            newString = newString + "<br>Food-RS Usage WARNING Usage:" + calcThree.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcThree.RESUPPLY_AVERAGE.toFixed(2);
-                        }
-    
-                        else {
-                            newString = newString + "Food-RS Usage WARNING Usage:" + calcThree.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcThree.RESUPPLY_AVERAGE.toFixed(2);
-    
-                        }
-        
-                    }
-
-
-                    if (calcFour.USAGE_AVERAGE > calcFour.RESUPPLY_AVERAGE){
-
-                        if(newString.length > 0){
-                            newString = newString + "<br>Food-US Usage WARNING Usage:" + calcFour.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFour.RESUPPLY_AVERAGE.toFixed(2);
-                        }
-    
-                        else {
-                            newString = newString + "Food-US Usage WARNING Usage:" + calcFour.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFour.RESUPPLY_AVERAGE.toFixed(2);
-    
-                        }    
-                    }
-
-                    if (calcFive.USAGE_AVERAGE > calcFive.RESUPPLY_AVERAGE){
-
-                        if(newString.length > 0){
-                            newString = newString + "<br>KTO Usage WARNING Usage:" + calcFive.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFive.RESUPPLY_AVERAGE.toFixed(2);
-                        }
-    
-                        else {
-                            newString = newString + "KTO Usage WARNING Usage:" + calcFive.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcFive.RESUPPLY_AVERAGE.toFixed(2);
-    
-                        }    
-                    }
-
-                    if (calcSix.USAGE_AVERAGE > calcSix.RESUPPLY_AVERAGE){
-
-                        if(newString.length > 0){
-                            newString = newString + "<br>Pretreat Tanks Usage WARNING Usage:" + calcSix.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcSix.RESUPPLY_AVERAGE.toFixed(2);
-                        }
-    
-                        else {
-                            newString = newString + "Pretreat Tanks Usage WARNING Usage:" + calcSix.USAGE_AVERAGE.toFixed(2) + " Resupply:" + calcSix.RESUPPLY_AVERAGE.toFixed(2);
-    
-                        }    
-                    }
+                    
                         
         
                         
@@ -1631,13 +1784,14 @@ function startPredictions(data, itemRate, div) {
 
                         shapes: [
                             // Add horizontal lines for thresholds
-                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: 1039, y1: 1039, line: { color: 'red', width: 1, dash: 'dash' } },
-                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: 8, y1: 8, line: { color: 'green', width: 1, dash: 'dash' } },
-                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: 21, y1: 21, line: { color: 'blue', width: 1, dash: 'dash'} },
-                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: 160, y1: 160, line: { color: 'orange', width: 1, dash: 'dash'} },
-                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: 28, y1: 28, line: { color: 'purple', width: 1, dash: 'dash'} },
-                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: 5, y1: 5, line: { color: 'brown', width: 1, dash: 'dash'} },
-                        ],                 
+                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: aycThresh, y1: aycThresh, line: { color: 'red', width: 1, dash: 'dash' } },
+                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: filterThresh, y1: filterThresh, line: { color: 'green', width: 1, dash: 'dash' } },
+                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: rsfThresh, y1: rsfThresh, line: { color: 'blue', width: 1, dash: 'dash'} },
+                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: usfThresh, y1: usfThresh, line: { color: 'orange', width: 1, dash: 'dash'} },
+                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: ktoThresh, y1: ktoThresh, line: { color: 'purple', width: 1, dash: 'dash'} },
+                            { type: 'line', visible: false, x0: dates[0], x1: dates[dates.length - 1], y0: pretreatThresh, y1: pretreatThresh, line: { color: 'brown', width: 1, dash: 'dash'} },
+                        ],                                                                              
+                        
 
                     };
 

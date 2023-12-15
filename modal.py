@@ -124,8 +124,6 @@ def request_modal_update(data_inventory, data_resupply, data_averages):
 def request_modal_update_RSWater(data_inventory, data_resupply, data_averages):
     # Extract relevant columns from inventory data
     data = data_inventory.drop('Category', axis=1)
-    # Pivot the table to have categories as columns
-    # pivot_data = data.pivot(index='datedim', columns='Category', values='distinct_discard_difference').reset_index()
 
     print('Resupply data: ', data_averages)
 
@@ -238,8 +236,7 @@ def request_modal_update_USWater(data_inventory, data_resupply, data_averages):
     # Extract relevant columns from inventory data
     print('Data Invetnory column list: ', data_inventory.columns.tolist())
     data = data_inventory.drop('Category', axis=1)
-    # Pivot the table to have categories as columns
-    # pivot_data = data.pivot(index='datedim', columns='Category', values='distinct_discard_difference').reset_index()
+    
     data = data.drop('Corrected Predicted (L)', axis=1)
 
     data = data.drop('resupply_technicalL', axis=1)
@@ -464,11 +461,7 @@ def request_modal_update_Gas(data_inventory, data_resupply, data_averages):
                 print(data[column].iloc[future_index:])
                 data[column].iloc[future_index] += newAmount
 
-                # Simulate daily usage based on rate averages
-                # for i in range(future_index, len(data)):
-                #    data[column].iloc[i] -= (rate_avg * 7)
 
-    print('maybe future here: ', data)
 
     # Predict future quantities
     future_dates_predict = pd.date_range(start='2023-09-06', end='2025-12-22')
