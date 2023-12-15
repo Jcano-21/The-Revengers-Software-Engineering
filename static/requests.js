@@ -1252,6 +1252,112 @@ function startPredictions(data, itemRate, div) {
                     console.log(smallestValues.data[4].value);
                     console.log(smallestValues.data[5].value);
 
+                    date1 = new Date(smallestValues.data[0].index);
+                    date2 = new Date(smallestValues.data[1].index);
+                    date3 = new Date(smallestValues.data[2].index);
+                    date4 = new Date(smallestValues.data[3].index);
+                    date5 = new Date(smallestValues.data[4].index);
+                    date6  = new Date(smallestValues.data[5].index);
+
+                    console.log('begin dates', date1);
+                    console.log(date2);
+                    console.log(date3);
+                    console.log(date4);
+                    console.log(date5);
+                    console.log(date6);
+
+                    month1 = date1.getMonth() + 1;
+                    month2 = date2.getMonth() + 1;
+                    month3 = date3.getMonth() + 1;
+                    month4 = date4.getMonth() + 1;
+                    month5 = date5.getMonth() + 1;
+                    month6 = date6.getMonth() + 1;
+
+                    monthDict = [month1, month2, month3, month4, month5, month6]
+
+                    Jan = 0
+                    Feb = 0
+                    Mar = 0
+                    Apr = 0
+                    May = 0
+                    Jun = 0
+                    Jul = 0
+                    Aug = 0
+                    Sep = 0
+                    Oct = 0
+                    Nov = 0
+                    Dec = 0
+
+                    counterDict = {
+                        January: 0,
+                        Febuary: 0,
+                        March: 0,
+                        April: 0,
+                        May: 0,
+                        June: 0,
+                        July: 0,
+                        August: 0,
+                        September: 0,
+                        October: 0,
+                        November: 0,
+                        December: 0
+                    }
+                    numDict = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                    nameDict = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 
+                    'August', 'September', 'October', 'November', 'December']
+
+                    for (let k = 0; k < numDict.length; k++) {
+                        for (let i = 0; i < monthDict.length; i++){
+
+                            
+                                if (monthDict[i] === numDict[k]){
+                                    for (months in counterDict) {
+                                        if (months === nameDict[k]) { 
+                                        counterDict[months] = counterDict[months] + 1
+                                        }
+                                    }
+                                }
+                        }
+
+                    }
+
+                    console.log('dictionary: ', counterDict)
+
+                    for (let i = 0; i < counterDict.length; i++) {
+                        console.log('month totals: ', counterDict[i])
+                    }
+                
+                    let maxMonth = null;
+                    let secondMaxMonth = null;
+                    let maxValue = -Infinity;
+                    let secondMaxValue = -Infinity;
+
+                    for ( month in counterDict) {
+                        value = counterDict[month];
+
+                        if(value > maxValue) {
+                            secondMaxVlue = maxValue;
+                            secondMaxMonth = maxMonth;
+                            
+                            maxValue = value;
+                            maxMonth = month;
+                        } else if (value > secondMaxValue) {
+                            secondMaxValue = value;
+                            secondMaxMonth = month;
+                        }
+                    }
+
+                    console.log('most likley months for threshold violations: ', maxMonth, secondMaxMonth);
+
+                    monthWarning = 'Months most likley to incure threshold violations: ' + maxMonth + ' & ' + secondMaxMonth;
+
+                    console.log('begin dates', month1);
+                    console.log(month2);
+                    console.log(month3);
+                    console.log(month4);
+                    console.log(month5);
+                    console.log(month6);
+
                     newString = ''
                     alertString = ''
                     const existingDiv = document.getElementById('graph_box');
@@ -1362,6 +1468,17 @@ function startPredictions(data, itemRate, div) {
                         newContainer.appendChild(newDivSix);
                         
                     }
+
+                    const newDivSeven = document.createElement('alertSeven');
+                        // Apply styles to the div
+                        newDivSeven.classList.add('alert');
+                        // Set the text content of the new div
+                        newDivSeven.innerHTML = monthWarning;
+                        newDivSeven.id = 'alertSeven'
+
+
+                        // Insert the new div as a child of the pre-existing div
+                        newContainer.appendChild(newDivSeven);
 
                     
                     
